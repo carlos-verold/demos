@@ -1,12 +1,15 @@
 #verold-boilerplate
 
-Verold Studio (http://studio.verold.com) is a web-based environment for creating 3D scenes. This repository 
-contains examples of how to use the Boilerplate code generated from Verold Studio.
+We are excited to announce that we have launched the first release of the Verold 3D Engine! The Verold 3D Engine, used with the Verold Studio online 3D collaboration tools, allows web designers to quickly and efficiently create interactive web-based 3D experiences. Did you see the [interactive trailer](http://findyourwaytooz.com) that Disney created for "Oz the Great and Powerful"? With our tools, you can make your own interactive 3D experiences like this at a fraction of the cost.
+
+If you've used Verold Studio, you know how easy it is to upload 3D models, position them in a scene, and setup materials and lighting. With the new engine, you can now take that scene and add dynamic behaviour to it by writing custom Three.js code. Professional grade CG tools running in the browser, deploying to the most widely used 3D renderer for the web.
+
+This GitHub repository contains examples showing web developers how to turn their 3D projects in Verold Studio into interactive 3D web experiences. The process is as simple as downloading Boilerplate code from your Verold Studio project, and adding interactivity through Javascript.
 
 ### Formalities:
 
 Verold Studio and the associated runtime engine are both free to use for non-commercial purposes. If you want to 
-build a game or website for a client, or for sale, contact us at info@verold.com and we'll work something out. 
+build a game or website for a client or business, contact us at info@verold.com and we'll work something out. 
 
 ### How it works:
 
