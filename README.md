@@ -25,7 +25,7 @@ for adding logic and gameplay to your 3D application. When you run the Boilerpla
 
 ### Quick Start:
 If you'd like to try out the API without going to the trouble of creating a 3D project, you can grab a sample Boilerplate
-from ![here](examples/01-spaceship). You can see the initial 3D project [here](http://studio.verold.com/projects/5145fdd0e810360200000342). This boilerplate code is exactly what you would get if this was your own project and you downloaded the boilerplate from it. Go ahead and grab the boilerplate and run it. You'll see the scene load. If you know THREE.js, dive in and make this project your own. Or use the samples elsewhere in this repo to play around. 
+from [here](https://github.com/Verold/verold-boilerplate/tree/master/examples/01-spaceship). You can see the initial 3D project [here](http://studio.verold.com/projects/5145fdd0e810360200000342). This boilerplate code is exactly what you would get if this was your own project and you downloaded the boilerplate from it. Go ahead and grab the boilerplate and run it. You'll see the scene load. If you know THREE.js, dive in and make this project your own. Or use the samples elsewhere in this repo to play around. 
 
 ### This repo:
 
