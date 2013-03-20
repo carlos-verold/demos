@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Verold Three.JS Boilerplate</title>
+  <link rel="stylesheet" href="stylesheets/reset.css">
+  <link rel="stylesheet" href="stylesheets/style.css">
+  <script type="text/javascript" src="http://assets.verold.com/verold_api/verold_api_v1.js"></script>
+  <script type="text/javascript" src="javascripts/underscore.js"></script>
+  <script type="text/javascript" src="javascripts/VeroldApp.js"></script>
+  <script type="text/javascript" src="javascripts/MyApp.js"></script>
+</head>
+<body>
+
+  <div id="loading-progress-container">
+    <p>Loading...</p>
+    <div class="loading-progress">
+      <div>&nbsp;</div>
+    </div>
+  </div>
+
+  <div style="display:none;" id="webGLunsupported">
+    <p>This demo requires support for webGL.<br />
+    Click <a href="http://verold.com/blog/2013/1/2/enabling-webgl-in-your-browser" target="_blank">here</a> to learn more.</p>
+  </div>
+
+  <script>
+
+    var veroldApp = new VeroldApp();
+    console.info(veroldApp);
+    var myApp = new MyApp( veroldApp );
+
+    VAPI.onReady( function() {
+      
+      veroldApp.initialize( {
+        container : null,
+        projectId : "513a4bf163117e020000105e",
+        enablePostProcess: false,
+        enablePicking: true,
+        handleInput: true,
+        antialias: false,
+        clearColor: 0xff0000,
+        xResMultiplier: 0.25,
+        yResMultiplier: 0.25,
+        success: function() {
+          myApp.startup();
+        }
+      });
+    });
+
+  </script>
+  
+</body>
+</html>

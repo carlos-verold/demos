@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Carnegie Museum - Hall of Architecture</title>
+  <link rel="stylesheet" href="stylesheets/reset.css">
+  <link rel="stylesheet" href="stylesheets/style.css">
+  <script type="text/javascript" src="http://assets.verold.com/verold_api/verold_api_v1.js"></script>
+  <script type="text/javascript" src="javascripts/underscore.js"></script>
+  <script type="text/javascript" src="javascripts/ui.js"></script>  
+  <script type="text/javascript" src="javascripts/VeroldApp.js"></script>
+  <script type="text/javascript" src="javascripts/MyApp.js"></script>
+</head>
+<body>
+
+  <div id="headers">
+    <h1>Hall of Architecture Interactive</h1>
+    <h2>Carnegie Museum of Art, Pittsburgh</h2>
+  </div>
+
+  <div id="loading-progress-container">
+    <p>Loading...</p>
+    <div class="loading-progress">
+      <div>&nbsp;</div>
+    </div>
+  </div>
+
+  <div style="display:none;" id="webGLunsupported">
+    <p>This demo requires support for webGL.<br />
+    Click <a href="http://verold.com/blog/2013/1/2/enabling-webgl-in-your-browser" target="_blank">here</a> to learn more.</p>
+  </div>
+
+  <div id="mesh513f4c25014ba00200000149" style="display:none; position:absolute; width:600px; top:20px; right:20px; background-color:black; color:white; z-index:10; border-color:white;" onclick="$('#mesh513f4c25014ba00200000149').hide();">
+    <div style="float:right;margin-right:6px; margin-top:2px;">
+      x
+    </div>
+    <div style="float:left; margin-left:10px; margin-right:10px; margin-bottom:10px;">
+      <h3>Lion's Gate at Mycenae<br><br>
+      <img src="images/artifacts/lionsgate.png" height="150px"/></h3>
+      <br>
+      <p>Mycenae is an archaelogical site in Greece, located about 90km south-west of Athens, in the North-eastern Peloponnese. Argos is 11km to the South; Corinth, 48km to the North. From the hills on which the palace was located one can see across the Angolid to the Saronic Gulf.</p>
+    </div>
+  </div>
+
+  <div id="mesh513f4c24014ba00200000122" style="display:none; position:absolute; width:600px; top:20px; right:20px; background-color:black; color:white; z-index:10; border-color:white;" onclick="$('#mesh513f4c24014ba00200000122').hide();">
+    <div style="float:right;margin-right:6px; margin-top:2px;">
+      x
+    </div>
+    <div style="float:left; margin-left:10px; margin-right:10px; margin-bottom:10px;">
+      <h3>Abbey St Gilles<br><br>
+      <img src="images/artifacts/stgilles.jpg" height="150px"/></h3>
+      <br>
+      <p>The abbey church is in typical southern French Romanesque style. The facade, built form 1120 to 1160, has a decorated entrance portico with three portals (the central one larger) with Corinthian columns and medieval sculpture decorations. These include, in the lower sector, a bestiary and scenes from the Old Testament; in the middle one it has statues and characters from the New Testament; the frieze and the tympana above the latter have also scenes from the same book, including the "Adoration of the Magi", the "Crucifixion of Jesus" and a "Maesta".</p>
+    </div>
+  </div>
+
+  <div id="mesh513f4c26014ba0020000019e" style="display:none; position:absolute; width:600px; top:20px; right:20px; background-color:black; color:white; z-index:10; border-color:white;" onclick="$('#mesh513f4c26014ba0020000019e').hide();">
+    <div style="float:right;margin-right:6px; margin-top:2px;">
+      x
+    </div>
+    <div style="float:left; margin-left:10px; margin-right:10px; margin-bottom:10px;">
+      <h3>Parthenon, Greece<br><br>
+      <img src="images/artifacts/parthenon.png" height="150px"/></h3> 
+      <p>The Parthenon (Ancient Greek: Παρθενών) is a temple in the Athenian Acropolis, Greece, dedicated to of the Greek goddess Athena, whom the people of Athens considered their protector. Its construction began in 447 BC and was completed in 438 BC, although decorations of the Parthenon continued until 431 BC. It is the most important surviving building of Classical Greece, generally considered to be the culmination of the development of the Doric order. Its decorative sculptures are considered some of the high points of Greek art. The Parthenon is regarded as an enduring symbol of Ancient Greece and of Athenian democracy and one of the world's greatest cultural monuments.</p>
+    </div>
+  </div>
+
+    <div id="mesh513f4c25014ba00200000135" style="display:none; position:absolute; width:600px; top:20px; right:20px; background-color:black; color:white; z-index:10; border-color:white;" onclick="$('#mesh513f4c25014ba00200000135').hide();">
+    <div style="float:right;margin-right:6px; margin-top:2px;">
+      x
+    </div>
+    <div style="float:left; margin-left:10px; margin-right:10px; margin-bottom:10px;">
+      <h3>Cathedrale Saint-Andre de Bordeaux<br><br>
+      <img src="images/artifacts/cathedrale.png" height="150px"/></h3> 
+      <p>The Cathedrale Saint-Andre de Bordeaux is a Roman Catholic cathedral, seat of the Archbishop of Bordeaux-Bazas, located in Bordeaux. The cathedral was consecrated by Pope Urban II in 1096. Of the original Romanesque edifice only a wall in the nave remains. The Royal Gate is from the early 13th century, while the rest of the construction is mostly from the 14th-15th centuries. The building is a national monument of France. In this church in 1137 the 15 year old Eleanor of Aquitaine married the future Louis VII a few months before She became Queen.</p>
+    </div>
+    </div>
+
+
+  <script>
+
+    var veroldApp = new VeroldApp();
+    console.info(veroldApp);
+    var myApp = new MyApp( veroldApp );
+
+    VAPI.onReady( function() {
+      
+      veroldApp.initialize( {
+        container : null,
+        projectId : "513f442015b17a0200000176",
+        enablePostProcess: false,
+        enablePicking: true,
+        handleInput: true,
+        clearColor: 0xff0000,
+        success: function() {
+          myApp.startup();
+        }
+      });
+    });
+
+  </script>
+  
+  <div id="footer">
+    <p>Powered by <a href="http://studio.verold.com" target="_blank"><img src="images/verold_logo_white.png" /></a> & <a href="http://mrdoob.github.com/three.js/" target="_blank"><img src="images/three_js_logo.png" height="30" /></a></p>
+  </div>
+
+  <script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-32112573-1']);
+    _gaq.push(['_setDomainName', 'verold.com']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+
+
+</body>
+</html>

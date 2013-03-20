@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <title>Verold Quest</title>
+  <link rel="stylesheet" href="stylesheets/reset.css">
+  <link rel="stylesheet" href="stylesheets/style.css">
+  <script type="text/javascript" src="http://assets.verold.com/verold_api/verold_api_v1.js"></script>
+  <script type="text/javascript" src="javascripts/vendor/underscore.js"></script>
+  <script type="text/javascript" src="javascripts/vendor/VeroldApp.js"></script>
+  <script type="text/javascript" src="javascripts/vendor/dungCarv.js"></script>
+  <script type="text/javascript" src="javascripts/Player.js"></script>
+  <script type="text/javascript" src="javascripts/Cerberus.js"></script>
+  <script type="text/javascript" src="javascripts/CaveMap.js"></script>
+  <script type="text/javascript" src="javascripts/VeroldQuest.js"></script>
+  <script type="text/javascript" src="javascripts/gamecontroller.js"></script>
+  <script type="text/javascript" src="javascripts/PlayerTouchController.js"></script>
+</head>
+<body>
+
+  <div id="loading-progress-container">
+    <p>Loading...</p>
+    <div class="loading-progress">
+      <div>&nbsp;</div>
+    </div>
+  </div>
+
+  <div style="display:none;" id="webGLunsupported">
+    <p>This demo requires support for webGL.<br />
+    Click <a href="http://verold.com/blog/2013/1/2/enabling-webgl-in-your-browser" target="_blank">here</a> to learn more.</p>
+  </div>
+
+  <script>
+
+    var veroldApp = new VeroldApp()
+      , veroldQuest = new VeroldQuest( veroldApp );
+
+    VAPI.onReady( function() {
+      
+      veroldApp.initialize( {
+        container : null,
+        projectId : "5142729753ffec02000006e7",
+        enablePostProcess: false,
+        enablePicking: true,
+        handleInput: true,
+        clearColor: 0xff0000,
+        forceLowEndRendering: veroldApp.isMobileDevice,
+        success: function() {
+          veroldQuest.startup();
+        }
+      });
+    });
+
+    window.veroldQuest = veroldQuest;
+  </script>
+  
+</body>
+</html>

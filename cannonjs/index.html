@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <title>Verold Three.JS Boilerplate</title>
+  <link rel="stylesheet" href="stylesheets/reset.css">
+  <link rel="stylesheet" href="stylesheets/style.css">
+  <script type="text/javascript" src="http://assets.verold.com/verold_api/verold_api_v1.js"></script>
+  <script type="text/javascript" src="javascripts/underscore.js"></script>
+  <script type="text/javascript" src="javascripts/VeroldApp.js"></script>
+  <script type="text/javascript" src="javascripts/MyApp.js"></script>
+  <script type="text/javascript" src="javascripts/cannon.js"></script>
+</head>
+<body>
+
+  <div id="loading-progress-container">
+    <p>Loading...</p>
+    <div class="loading-progress">
+      <div>&nbsp;</div>
+    </div>
+  </div>
+
+  <div style="display:none;" id="webGLunsupported">
+    <p>This demo requires support for webGL.<br />
+    Click <a href="http://verold.com/blog/2013/1/2/enabling-webgl-in-your-browser" target="_blank">here</a> to learn more.</p>
+  </div>
+  <div style="position: absolute; left: 0px; top: 0px; padding: 5px; font-size: 30px; color: white; ">
+    Press 'space' or tap mouse/screen to reset.
+  </div>
+
+  <script>
+
+    var veroldApp = new VeroldApp();
+    console.info(veroldApp);
+    var myApp = new MyApp( veroldApp );
+
+    VAPI.onReady( function() {
+      
+      veroldApp.initialize( {
+        container : null,
+        projectId : "512cb8f5d3c67502000005a1",
+        enablePostProcess: false,
+        enablePicking: true,
+        handleInput: true,
+        clearColor: 0xff0000,
+        forceLowEndRendering: veroldApp.isMobileDevice,
+        success: function() {
+          myApp.startup();
+        }
+      });
+    });
+
+  </script>
+  
+</body>
+</html>
