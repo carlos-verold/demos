@@ -317,7 +317,7 @@ VeroldApp.prototype = {
     }
   },
 
-  isMoble : function() {
+  isMobile : function() {
     return this.isMobileDevice;
   }
 }
