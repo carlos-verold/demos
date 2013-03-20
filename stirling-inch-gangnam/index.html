@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Stirling Inch - Pretty Gangnam Fly</title>
+  <link rel="stylesheet" href="stylesheets/reset.css">
+  <link rel="stylesheet" href="stylesheets/dat.gui.css">
+  <link rel="stylesheet" href="stylesheets/style.css">
+  <link rel="stylesheet" href="stylesheets/scene-font.css">
+  <script type="text/javascript" src="http://assets.verold.com/verold_api/verold_api_v1.js"></script>
+  <link href='http://fonts.googleapis.com/css?family=Raleway:400,200,300' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+  <script src="javascripts/jquery.hashchange.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="javascripts/jquery.easytabs.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="javascripts/jquery.nicescroll.min.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" src="javascripts/ui.js"></script>
+  <script type="text/javascript" src="javascripts/VeroldApp.js"></script>
+  <script type="text/javascript" src="javascripts/dat.gui.min.js"></script>
+  <script type="text/javascript" src="javascripts/underscore.js"></script>
+  <script type="text/javascript" src="javascripts/LimitedFOVCamera.js"></script>
+  <script type="text/javascript" src="javascripts/GangnamApp.js"></script>
+</head>
+<body>
+
+  <div id="headers">
+    <h1>STIRLING INCH</h1>
+    <h2>Pretty Gangnam Fly</h2>
+  </div>
+
+  <div id="loading-progress-container">
+    <p>Loading...</p>
+    <div class="loading-progress">
+      <div>&nbsp;</div>
+    </div>
+  </div>
+
+  <div style="display:none;" id="webGLunsupported">
+    <p>This demo requires support for webGL.<br />
+    Click <a href="http://verold.com/blog/2013/1/2/enabling-webgl-in-your-browser" target="_blank">here</a> to learn more.</p>
+  </div>
+
+  <div style="position:absolute; bottom:20px; right:20px; display:none;">
+    <iframe id="soundcloud" width="500" height="166" scrolling="no" frameborder="no" src="http://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F68768438&amp;color=000000&amp;auto_play=true&amp;show_artwork=true"></iframe>
+  </div>
+
+  <div class="menu" id="scoreboard" style="position:absolute; width=120px; top:20px; left:20px; background-color:black; color:white; z-index:10; border-color:white; ">
+    <br>
+    <h3 style="text-align:left;">&nbsp;Headshots: <span id="headshots"></span></h3>
+    <br>
+    <h3 style="text-align:left;">&nbsp;Lives: <span id="youdeads"></span></h3>
+    <br>
+  </div>
+
+  <div class="menu" id="gameover" style="position:absolute; width=100%; height=100%; background-color:black;  color:white; z-index:10; display:none;">
+
+  </div>
+
+  <script>
+
+    var veroldApp = new VeroldApp();
+    console.info(veroldApp);
+    var gangnamApp = new GangnamApp( veroldApp );
+
+    VAPI.onReady( function() {
+      
+      veroldApp.initialize( {
+        container : null,
+        projectId : "512f9adb161c230200000993",
+        enablePostProcess: false,
+        enablePicking: true,
+        handleInput: true,
+        clearColor: 0xff0000,
+        success: function() {
+          gangnamApp.startup();
+        }
+      });
+    });
+
+  </script>
+  
+<div id="share-panel" class="menu">
+    <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://labs.verold.com/stirling-inch-gangnam/">Tweet</a>
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+    <div class="g-plus" data-action="share" data-annotation="bubble" data-href="http://labs.verold.com/stirling-inch-gangnam"></div>
+    <div class="fb-like" data-href="http://labs.verold.com/stirling-inch-gangnam/" data-send="false" data-layout="button_count" data-width="75" data-show-faces="false" data-colorscheme="light"></div>
+  </div>
+
+    <div id="footer">
+    <p>Powered by <a href="http://studio.verold.com" target="_blank"><img src="images/verold_logo_white.png" /></a> & <a href="http://mrdoob.github.com/three.js/" target="_blank"><img src="images/three_js_logo.png" height="30" /></a></p>
+  </div>
+
+  <script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-32112573-1']);
+    _gaq.push(['_setDomainName', 'verold.com']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+
+
+</body>
+</html>

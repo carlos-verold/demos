@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Verold Three.JS Boilerplate</title>
+  <link rel="stylesheet" href="stylesheets/style.css">
+  <script type="text/javascript" src="http://assets.verold.com/verold_api/verold_api_v1.js"></script>
+  <script type="text/javascript" src="javascripts/Box2D.js"></script>
+  <script type="text/javascript" src="javascripts/underscore.js"></script>
+  <script type="text/javascript" src="javascripts/VeroldApp.js"></script>
+  <script type="text/javascript" src="javascripts/MyApp.js"></script>
+</head>
+<body>
+  <div id="loading-progress-container">
+    <p>Loading...</p>
+    <div class="loading-progress">
+      <div>&nbsp;</div>
+    </div>
+  </div>
+  <canvas id="canvas" style="position: absolute; left: 50px; top: 50px; width: 1000px; height: 500px;"></canvas>
+  <div style="position: absolute; top: 15px; left: 15px; width: 300px; height: 400px; border: 1px solid #fff; background-color: #333; color: #fff; padding: 5px;">
+    <h2>Instructions</h2>
+
+    <ul>
+      <li>Arrow keys - move puck</li>
+      <li>Space bar - drop puck</li>
+    </ul>
+
+    <h2>Slots</h2>
+
+    <ul>
+      <li>Game Over</li>
+      <li>+100 Points</li>
+      <li>+500 Points</li>
+      <li>Game Over</li>
+      <li>+1000 Points</li>
+      <li>Game Over</li>
+      <li>+500 Points</li>
+      <li>+100 Points</li>
+      <li>Game Over</li>
+    </ul>
+  </div>
+  <div style="position: absolute; top: 0px; right: 0px; color: white; font-size: 24px; text-align: right; padding: 10px;">
+    High Score: <span id="high-score">0</span><br/>
+    Score: <span id="score">0</span>
+  </div>
+  <script>
+    var veroldApp = new VeroldApp();
+    console.info(veroldApp);
+    var myApp = new MyApp( veroldApp );
+
+    VAPI.onReady(function() {
+      veroldApp.initialize( {
+        container : null,
+        projectId : "5125972f87bc8e0200000280",
+        enablePostProcess: false,
+        enablePicking: true,
+        handleInput: true,
+        clearColor: 0xff0000,
+        isMobileDevice: (/iphone|ipad|ipod|android|blackberry|bb10|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase())),
+        success: function() {
+          myApp.startup();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

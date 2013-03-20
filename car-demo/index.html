@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tyga Rack City</title>
+  <link rel="stylesheet" href="stylesheets/reset.css">
+  <link rel="stylesheet" href="stylesheets/style.css">
+  <script type="text/javascript" src="javascripts/verold_api_v1.js"></script>
+  <script type="text/javascript" src="jquery/jquery-1.4.3.min.js"></script>
+  <script type="text/javascript" src="javascripts/underscore.js"></script>
+  <script type="text/javascript" src="javascripts/VeroldApp.js"></script>
+  <script type="text/javascript" src="javascripts/CarApp.js"></script>
+  <script type="text/javascript" src="javascripts/CarCamera.js"></script>
+</head>
+<body>
+
+  <div id="loading">
+    <img src="textures/loader.gif" width="229" height="109" />
+  </div>
+
+  <video id="video" oncanplay="this.muted = true;" loop autoplay>
+    <source src="video/Rackcity2.webm" type='video/webm'>
+  </video>
+
+  <script>
+
+    var myApp = new CarApp();
+
+    VAPI.onReady( function() {
+      
+      myApp.initialize( {
+        container : null,
+        projectId : "5111262e6cfc680200000018",
+        enablePostProcess: false,
+        enablePicking: true,
+        handleInput: true,
+        clearColor: 0xff0000,
+      });
+    });
+
+
+  </script>
+  
+</body>
+</html>
