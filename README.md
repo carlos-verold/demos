@@ -1,4 +1,4 @@
-#verold-boilerplate
+#Verold Demos
 
 The Verold 3D Engine, used with the Verold Studio online 3D collaboration tools, allows web designers to quickly and efficiently create interactive web-based 3D experiences. Did you see the [interactive trailer](http://findyourwaytooz.com) that Disney created for "Oz the Great and Powerful"? With our tools, you can make your own interactive 3D experiences like this at a fraction of the cost.
 
