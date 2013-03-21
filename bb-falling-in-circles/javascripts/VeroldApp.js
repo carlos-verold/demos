@@ -2,9 +2,6 @@ function VeroldApp( properties ) {
   this.el = undefined;
 
   this.veroldEngine = undefined;
-
-  this.isMobileDevice = (/iphone|ipad|ipod|android|blackberry|bb10|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
-
 }
 
 VeroldApp.prototype = {
@@ -46,40 +43,41 @@ VeroldApp.prototype = {
       });
 
       that.defaultSceneID = project.get("entityId");
-
-      that.veroldEngine.on( "resize", that.onResize, that );
-
-      window.addEventListener( 'resize', function() {
-        that.veroldEngine.trigger('resize');
-      } );
       
       that.veroldEngine.initialize( {
         "entities": arguments[2], 
         "mainProgramContext" : that, 
         "mainUpdateFunction" : that.update,
         "handleInput" : options.handleInput,
-        "projectId" : options.projectId,
-        "antialias" : options.antialias,
-        "shadowMapEnabled" : options.shadowMapEnabled,
-        "shadowMapType" : options.shadowMapType,
+        "projectId" : options.projectId, 
         "enablePostProcess" : options.enablePostProcess,
         "enablePicking" : options.enablePicking,
         "clearColor" : options.clearColor ? options.clearColor : 0x000000,
-        "xResMultiplier" : options.xResMultiplier,
-        "yResMultiplier" : options.yResMultiplier,
-        "clearBeforeRender" : options.clearBeforeRender,
-        "forceLowEndRendering" : options.forceLowEndRendering,
+        "forceLowEndRendering" : options.forceLowEndRendering !== undefined ? options.forceLowEndRendering : false,
+        // "isWritable" : this.isWritable,
+        // "isEmbedded" : this.isEmbedded,
+      });
+
+      AppUI.initControlsOverlay();
+      AppUI.initInfoOverlay({
+        show: function()  {
+          that.veroldEngine.trigger("info_show");
+        },
+        hide: function() {
+          that.veroldEngine.trigger("info_hide");
+        }
       });
 
       //Call callback passed into the boiler plate
       if ( options.success ) options.success();
+
     });
 
+    AppUI.animateLoadingProgress(4000);
   },
 
   uninitialize: function() {
 
-    this.veroldEngine.off( "resize", this.onResize, this );
     this.veroldEngine.uninitialize();
     this.veroldEngine = undefined;
 
@@ -109,14 +107,6 @@ VeroldApp.prototype = {
     }
     else {
       console.warn("VeroldApp.trigger() called before the application has been initialized. Call initialize() first.")
-    }
-  },
-
-  // Events
-  onResize: function() {
-    
-    if (this.veroldEngine) {
-      this.veroldEngine.onResize();
     }
   },
 
@@ -220,7 +210,7 @@ VeroldApp.prototype = {
 
   getRenderWidth: function() {
     if ( this.veroldEngine ) {
-      return this.veroldEngine.Renderer.getXRes();
+      return this.veroldEngine.Renderer.getWidth();
     }
     else {
       console.warn("VeroldApp.getRenderWidth() called before the application has been initialized. Call initialize() first.")
@@ -230,26 +220,6 @@ VeroldApp.prototype = {
 
   getRenderHeight: function() {
     if ( this.veroldEngine ) {
-      return this.veroldEngine.Renderer.getYRes();
-    }
-    else {
-      console.warn("VeroldApp.getRenderHeight() called before the application has been initialized. Call initialize() first.")
-      return null;
-    }
-  },
-
-  getWidth: function() {
-    if ( this.veroldEngine ) {
-      return this.veroldEngine.Renderer.getWidth();
-    }
-    else {
-      console.warn("VeroldApp.getRenderWidth() called before the application has been initialized. Call initialize() first.")
-      return null;
-    }
-  },
-
-  getHeight: function() {
-    if ( this.veroldEngine ) {
       return this.veroldEngine.Renderer.getHeight();
     }
     else {
@@ -257,7 +227,7 @@ VeroldApp.prototype = {
       return null;
     }
   },
-
+  
   loadScript: function(path, callback) {
     var head= document.getElementsByTagName('head')[0];
     var script= document.createElement('script');
@@ -267,57 +237,7 @@ VeroldApp.prototype = {
     script.onload = callback;
   },
 
-  setLoadingProgress : function(percent) {
-    if(!this.loadingProgress) {
-      this.createLoadingProgress();
-    }
-    this.loadingProgress.setProgress(percent); 
-  },
-
-  hideLoadingProgress : function() {
-    if(!this.loadingProgress) {
-      this.createLoadingProgress();
-    }
-    this.loadingProgress.hide(); 
-  },
-
-  createLoadingProgress: function() {
-    var LoadingProgress = function() {
-      this.progressContainer = $('#loading-progress-container');
-      this.progressIndicator = this.progressContainer.find('.loading-progress div');
-    };
-
-    LoadingProgress.prototype.setProgress = function(percent) {
-      this.progressIndicator.css({width:percent+'%'});
-    };
-
-    LoadingProgress.prototype.hide = function() {
-      this.progressContainer.hide();
-    };
-
-    this.loadingProgress = new LoadingProgress();
-  },
-
-  hasGL : (function() {
-    try {
-      return !!window.WebGLRenderingContext && !! document.createElement('canvas').getContext('experimental-webgl');
-    } catch (e) {
-      return false;
-    }
-  })(),
-
-  webGLsupported : function() {
-    if(!this.hasGL) {
-      this.hideLoadingProgress();
-      var unsupportedUI = $('#webGLunsupported');
-      unsupportedUI.show();
-      return false;
-    } else {
-      return true;
-    }
-  },
-
   isMobile : function() {
-    return this.isMobileDevice;
+    return window.verold && window.verold.isMobile;
   }
 }
