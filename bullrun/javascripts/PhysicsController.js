@@ -2,13 +2,16 @@ PhysicsController = function( veroldApp ) {
 
   this.veroldApp = veroldApp;
   this.world = undefined;
+
+  this.trackBodies = [];
+  this.trackFixtures = [];
 }
 
 PhysicsController.prototype = {
 
   constructor: PhysicsController,
 
-  initialize : function( numVehicles ) {
+  initialize : function( ) {
 
     var that = this;
     //Bind to fixed update loop
@@ -33,7 +36,35 @@ PhysicsController.prototype = {
       new b2Vec2(0, 0) //gravity
       , true //allow sleep
     );
+   
+    //setup debug draw
+    this.debugDraw = new b2DebugDraw();
+    this.debugCanvas = document.createElement('canvas');
+    this.debugCanvas.id = "box2d_debug_canvas";
+    this.debugCanvas.width = this.veroldApp.getRenderWidth();
+    this.debugCanvas.height = this.veroldApp.getRenderHeight();
+    document.body.appendChild( this.debugCanvas );
+    //var context = this.veroldApp.getRenderer().domElement.getContext("2d");
+    this.debugDraw.SetSprite( this.debugCanvas.getContext("2d") );
+    this.debugDraw.SetDrawScale( 50.0 );
+    this.debugDraw.SetFillAlpha( 0.3 );
+    this.debugDraw.SetLineThickness( 1.0 );
+    this.debugDraw.SetFlags( b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit );
+    this.world.SetDebugDraw( this.debugDraw );
+    this.toggleDebugDraw( false );
+         
+  },
 
+  uninitialize : function() {
+	
+    this.veroldApp.off("fixedUpdate", this.fixedUpdate, this );
+
+    for ( var x in this.vehicleFixtures ) {
+      //this.vehicleFixtures.destroyBody()
+    }
+  },
+
+  createVehicleBodies: function( numVehicles ) {
     //Spawn pool of physics bodies to be linked up with vehicles later
     //When supporting differently-sized vehicles, I think we'll need multiple
     //pools if we can't change fixture sizes on the fly.
@@ -43,8 +74,8 @@ PhysicsController.prototype = {
 
     var fixDef = new b2FixtureDef;
        fixDef.density = 1.0;
-       fixDef.friction = 0.5;
-       fixDef.restitution = 0.2;
+       fixDef.friction = 0.01;
+       fixDef.restitution = 0.4;
        
     var bodyDef = new b2BodyDef;
     bodyDef.type = b2Body.b2_dynamicBody;
@@ -62,32 +93,34 @@ PhysicsController.prototype = {
       this.vehicleBodies.push( this.world.CreateBody(bodyDef) );
       this.vehicleFixtures.push( this.vehicleBodies[i].CreateFixture(fixDef) );
     }
-   
-    //setup debug draw
-    this.debugDraw = new b2DebugDraw();
-    this.debugCanvas = document.createElement('canvas');
-    this.debugCanvas.id = "box2d_debug_canvas";
-    this.debugCanvas.width = this.veroldApp.getRenderWidth();
-    this.debugCanvas.height = this.veroldApp.getRenderHeight();
-    document.body.appendChild( this.debugCanvas );
-    //var context = this.veroldApp.getRenderer().domElement.getContext("2d");
-    this.debugDraw.SetSprite( this.debugCanvas.getContext("2d") );
-    this.debugDraw.SetDrawScale( 100.0 );
-    this.debugDraw.SetFillAlpha( 0.3 );
-    this.debugDraw.SetLineThickness( 1.0 );
-    this.debugDraw.SetFlags( b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit );
-    this.world.SetDebugDraw( this.debugDraw );
-    this.toggleDebugDraw( false );
-         
   },
 
-  uninitialize : function() {
-	
-    this.veroldApp.off("fixedUpdate", this.fixedUpdate, this );
+  createTrackSideBody: function( length, width, angle, position ) {
+    
+    var fixDef = new b2FixtureDef;
+       fixDef.density = 1.0;
+       fixDef.friction = 0.01;
+       fixDef.restitution = 0.2;
+       
+    var bodyDef = new b2BodyDef;
+    bodyDef.type = b2Body.b2_staticBody;
 
-    for ( var x in this.vehicleFixtures ) {
-      //this.vehicleFixtures.destroyBody()
-    }
+    //for(var i = 0; i < number; ++i) {
+      
+       fixDef.shape = new b2PolygonShape;
+       fixDef.shape.SetAsBox(
+             length / 2 //half width
+          ,  width / 2 //half height
+       );
+      
+      var body = this.world.CreateBody(bodyDef)
+      this.trackBodies.push( body );
+      var fixture = body.CreateFixture(fixDef);
+      this.trackFixtures.push( fixture );
+
+      body.SetPosition( position );
+      body.SetAngle( angle );
+    //}
   },
 
   fixedUpdate : function( delta ) {

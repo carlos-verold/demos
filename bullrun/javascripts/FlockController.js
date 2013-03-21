@@ -1,22 +1,31 @@
 FlockController = function( veroldApp ) {
 
   this.veroldApp = veroldApp;
-  this.localFlockRange = 1;
+  this.localFlockRange = 2;
   this.centreOfFlockMultiplier = 0.5;
+
+  //Controls the distance that drivers need to get to each other before they try to move away.
+  this.flockSpread = 2;
+  this.spreadStrength = 3;
+  window.flock = this;
 }
 
 FlockController.prototype = {
 
   constructor: FlockController,
 
-  initialize : function( track, numDrivers ) {
+  initialize : function( physicsSim, track, numDrivers, numHumanDrivers ) {
 
     this.track = track;
 
-    this.physicsSim = new PhysicsController( this.veroldApp );
-    this.physicsSim.initialize( numDrivers );
+    this.physicsSim = physicsSim;
+    this.physicsSim.createVehicleBodies( numDrivers );
     this.initDrivers( numDrivers );
     this.initVehicles( numDrivers );
+
+    if ( numHumanDrivers ) {
+      this.drivers[0].isHuman = true;
+    }
 
     //Vector to record
     this.tempVector2D = new b2Vec2();
@@ -42,11 +51,9 @@ FlockController.prototype = {
         this.tempVector2D.Set( paceRabbitVec.x, paceRabbitVec.y );
 
         //For each boid, calculate the "centre of mass" of nearby boids and get a vector that represents the desired direction of travel
-        var centreOfFlockVector = this.drivers[x].tendToCentreOfFlock();
-        centreOfFlockVector.Multiply( this.centreOfFlockMultiplier );
-        this.tempVector2D.Add( centreOfFlockVector );
+        this.tempVector2D.Add( this.drivers[x].tendToCentreOfFlock( this.centreOfFlockMultiplier ) );
 
-        this.tempVector2D.Add( this.drivers[x].tendToMaintainDistance() );
+        this.tempVector2D.Add( this.drivers[x].tendToMaintainDistance( this.flockSpread, this.spreadStrength ) );
 
         this.tempVector2D.Add( this.drivers[x].tendToMatchVelocity() );
       
@@ -76,7 +83,7 @@ FlockController.prototype = {
       var physicsFixture = that.physicsSim.getVehicleFixture( num );
       physicsFixture.driverID = num;
       var physicsBody = that.physicsSim.getVehicleBody( num );
-      var newCar = new Vehicle( veroldApp );
+      var newCar = new Vehicle( veroldApp, that.drivers[num] );
       newCar.initialize( that.track, {
         success: function( newVehicle ) {
           that.drivers[ num ].setVehicle( newVehicle );
@@ -99,6 +106,7 @@ FlockController.prototype = {
   updateLocalFlockInfo: function( driverID ) {
 
     this.drivers[ driverID ].localFlockIDs = [];
+    this.drivers[ driverID ].localStaticCollision = [];
     var that = this;
     var vehicle = this.drivers[ driverID ].vehicle;
     if ( vehicle ) {
@@ -107,9 +115,18 @@ FlockController.prototype = {
       this.drivers[ driverID ].localFlockBB.upperBound.Set( position.x + this.localFlockRange, position.y + this.localFlockRange);
       this.physicsSim.world.QueryAABB( function( fixture ) {
         //console.log("Fixture ", fixture, " is near driver # " + driverID );
-        that.drivers[ driverID ].localFlockIDs.push( fixture.driverID );
+        if ( fixture.driverID !== undefined ) {
+          that.drivers[ driverID ].localFlockIDs.push( fixture.driverID );
+        }
+        else {
+          that.drivers[ driverID ].localStaticCollision.push( fixture );
+        }
       }, this.drivers[ driverID ].localFlockBB );
     }
+  },
+
+  getHumanDriver: function( playerNum ) {
+    return this.drivers[0];
   }
 
 }
