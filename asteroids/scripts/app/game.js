@@ -4,7 +4,8 @@ define(['app/stage','app/actorfactory','app/util','app/customevents'],
 function(Stage,ActorFactory,util,CustomEvents) {
 
   var stage = new Stage(),
-      gameActions;
+      gameActions,
+      veroldApps;
 
   window.asteroids = {};
   window.asteroids.events = new CustomEvents();
@@ -29,14 +30,14 @@ function(Stage,ActorFactory,util,CustomEvents) {
   });
 
   gameActions = {
-    start : function(veroldApps){
+    start : function(){
 
       stage.setVeroldApps(veroldApps);
 
       this.addShip();
 
       // adding asteroids
-      var i = 0, l = 10;
+      var i = 0, l = 15;
       for(i=0;i<l;i+=1) {
         this.addAsteroid();
       }
@@ -50,15 +51,20 @@ function(Stage,ActorFactory,util,CustomEvents) {
             x: util.randRange(bnds.x1,bnds.x2),
             y: util.randRange(bnds.y1,bnds.y2)
           },
-          angularVelocity = 15;
+          angularVelocity = 15,
+          asteroid;
 
-      stage.createActor({
+      asteroid = stage.createActor({
         actorType: 'asteroid',
         position: position,
         angle: util.randRange(0,360),
         initialForce: util.randRange(10,20),
         angularVelocity: util.randRange(-angularVelocity,angularVelocity),
-        radius: 5
+        radius: 4
+      });
+
+      veroldApps.asteroids.createAsteroidModel(function(model) {
+        asteroid.setModel(model);
       });
     },
 
@@ -67,14 +73,16 @@ function(Stage,ActorFactory,util,CustomEvents) {
         actorType: 'ship',
         position: stage.getCenterPoint(),
         angle: 0,
-        radius: 4
+        radius: 5,
+        model: veroldApps.asteroids.getShipModel()
       });
     }
   };
 
   return {
-    start : function(asteroidsApp) {
-      gameActions.start(asteroidsApp);
+    start : function(vapps) {
+      veroldApps = vapps;
+      gameActions.start();
     }
   };
 

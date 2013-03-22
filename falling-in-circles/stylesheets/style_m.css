@@ -39,11 +39,11 @@ body{
 h1 {
   font-family: 'Raleway', sans-serif;
   font-weight:200;
-  padding: 15% 20px 20px;
+  padding: 5% 20px 20px;
   color: rgba(255,255,255,0.8);
   text-shadow: 0 0 10px #5cd6f9;
   text-align:center;
-  font-size:4em;
+  font-size:2.7em;
 }
 
 h2 {
@@ -109,11 +109,10 @@ strong {
 #instructions {
   font-family: 'Open Sans', sans-serif;
   position: absolute;
-  top: 50%;
-  left: 10px;
-  right: 10px;
-  height: 250px;
-  margin-top: -125px;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
   z-index: 100;
   background: #111;
   color: #fff;
@@ -125,9 +124,17 @@ strong {
   display: none;
 }
 
+#instructions h2 {
+  margin-bottom: 20px;
+}
+
+#instructions .inst-item {
+  height: 75px;
+}
+
 #instructions .close {
   float: right;
-  font-size: 10px;
+  font-size: 16px;
   margin: 5px 5px 0 0;
   text-decoration: none;
   color: #fefefe;
@@ -139,7 +146,21 @@ strong {
 }
 
 #instructions p {
-  margin: 10px 0;
+  float: left;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+@media all and (orientation:portrait) {
+  
+  #instructions p {
+    width: 190px;
+  }
+}
+
+#instructions img {
+  float: left;
+  margin-right: 15px;
 }
 
 #fic-container {
@@ -286,25 +307,11 @@ strong {
 
 #share-panel {
   text-align: center;
-  overflow: hidden;
-  height: 22px;
   margin: 20px 0;
 }
 
-#share-panel .fb-like {
-  margin-right: 2px;
-}
-
-.fb-like span {
-  top: -4px !important;
-}
-
-.share {
-  color:white;
-  font-weight:normal;
-  font-family: 'Open Sans', Helvetica, sans-serif;
-  position:relative;
-  top:-5px;
+#share-panel a:hover {
+  text-decoration: none;
 }
 
 .menu {
@@ -325,13 +332,16 @@ strong {
   right: 20px;
 }
 
+#mainMenu img {
+  margin: 0;
+}
+
 #mainMenu .icon-moon.active:before {
   color: #44ABDA;
 }
 
 #webGLunsupported {
   position: absolute;
-  top: 50%;
   left: 50%;
   width: 300px;
   height: 50px;
@@ -342,7 +352,6 @@ strong {
 
 #fpTexturesUnsupported {
   position: absolute;
-  top: 50%;
   left: 50%;
   width: 300px;
   height: 50px;
@@ -353,13 +362,18 @@ strong {
 
 #vTexturesUnsupported {
   position: absolute;
-  top: 50%;
   left: 50%;
   width: 300px;
   height: 50px;
   margin: -25px 0 0 -150px;
   color: #999;
   text-align: center;
+}
+
+#webGLunsupported ,
+#fpTexturesUnsupported ,
+#vTexturesUnsupported {
+  bottom: 5%;
 }
 
 /* dat.gui styles */

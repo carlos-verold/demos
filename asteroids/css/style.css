@@ -63,8 +63,8 @@ html, body {
 body {
     font-family:monospace;
     font-size:62.5%;
-    background:#111111;
-    background:url(../gfx/tile3.jpg) repeat;
+    background:#000;
+    background:url(../gfx/milkyway.jpg) repeat top center;
 }
 
 #b2d-debug {
@@ -107,4 +107,11 @@ body {
 
 .msgfalse {
     color:#ff0000;
+}
+
+#ui {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100;
 }

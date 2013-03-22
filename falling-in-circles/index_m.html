@@ -37,9 +37,6 @@
   <script type="text/javascript" src="javascripts/TrojanCamera.js"></script>
   <script type="text/javascript" src="javascripts/dat.gui.min.js"></script>
 
-  <!-- facebook share button dependency -->
-  <div id="fb-root"></div>
-
   <div id="page-header">
     <p>Powered by 
       <a href="http://studio.verold.com" target="_blank"><img src="images/verold_logo_white.png" width="60" /></a>
@@ -48,7 +45,8 @@
     </p>
 
     <div id="mainMenu" class="menu">
-      <a id="infoLink" class="icon-moon icon-project" href="javascript:void(0);"></a>
+      <a id="helpLink" href="javascript:void(0);"><i class="icon-moon icon-help-alt" data-defaultClass="icon-help-alt"></i></a>
+      <a id="infoLink" href="javascript:void(0);"><i class="icon-moon icon-project" data-defaultClass="icon-project"></i></a>
     </div>
 
   </div>
@@ -67,7 +65,7 @@
       </div>
     </div>
     
-    <div id="info-panel" class="overlay">
+    <div id="info-panel" class="overlay panel">
 
       <div id="info-panel-overflow">
 
@@ -93,25 +91,24 @@
         <p class="pMargin"><a href="studio.verold.com">Verold Inc.</a>, for given me to the chance to make this.</p><br>
 
         <div id="share-panel">
-          <div class="g-plus" data-action="share" data-annotation="bubble" data-href="http://labs.verold.com/falling-in-circles"></div>
-          <div class="fb-like" data-href="http://labs.verold.com/falling-in-circles/" data-send="false" data-layout="button_count" data-width="75" data-show-faces="false" data-colorscheme="light"></div>
-          <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://labs.verold.com/falling-in-circles/">Tweet</a>
-          <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+          <a href="http://www.facebook.com/sharer.php?u=http://api.verold.com/demos/falling-in-circles/" target="_blank"><i class="icon-moon icon-facebook"></i></a>
+          <a href="http://twitter.com/share?text=Check%20out%20Verold's%20%22Falling%20In%20Circles%22%20demo!%20%40verold&url=http://api.verold.com/demos/falling-in-circles/" target="_blank"><i class="icon-moon icon-twitter"></i></a>
+          <a href="http://plus.google.com/share?url=http://api.verold.com/demos/falling-in-circles/" target="_blank"><i class="icon-moon icon-google-plus"></i></a>
         </div>
 
       </div>
       
     </div>
+
+    <div id="instructions" class="panel">
+      <a href="javascript:void(0);"><img src="images/x.png" alt="close" class="close" /></a>
+      <div class="inst-item clearfix"><img src="images/one_finger_tap.png" alt="Single Touch" /><p>Spawn asteroids in a circular orbit.</p></div>
+      <div class="inst-item clearfix"><img src="images/two_finger_tap.png" alt="Double Touch" /><p>Toggle between Jupiter and Sun reference frames.</p></div>
+      <div class="inst-item clearfix"><img src="images/three_finger_tap.png" alt="Triple Touch" /><p>Reset all asteroids into circular orbits.</p></div>
+    </div>
+
   </div>
 
-  <div id="instructions">
-    <a href="javascript:void(0);" class="close icon-moon icon-close"></a>
-    <h2>Instructions</h2>
-    <p><strong>Single Touch</strong> - Spawn asteroids in a circular orbit.</p>
-    <p><strong>Double Touch</strong> - Toggle between Jupiter and Sun reference frames.</p>
-    <p><strong>Triple Touch</strong> - Reset all asteroids into circular orbits.</p>
-    <p><strong>Rotation</strong> - Landscape mode: Jupiter reference frame with L4 and L5 highlight.</p>
-  </div>
 
   <div style="display:none;" id="webGLunsupported">
     <p>This demo requires support for WebGL.<br />

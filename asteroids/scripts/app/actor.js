@@ -54,30 +54,61 @@ define([
         this.body.SetAngularVelocity(util.tr(this.attributes.angularVelocity));
       }
 
-      // create vector graphic
-      if(!this.attributes.states) {
-        this.attributes.states = {
-          'default':{
-            'points':util.generateCircPoints(8,this.attributes.radius*this.scale),
-            'scale':this.attributes.drawScale || 1,
-            'drawStyles':{
-              'lineWidth':3.0,
-              'lineCap':'round',
-              'lineJoin':'round',
-              'strokeStyle':'#111',
-              'fillStyle':'#666666'
-            }
-          }
-        };
+      if(!!this.attributes.model) {
+        this.setModel(this.attributes.model);
       }
+
+      // create vector graphic
+      // if(!this.attributes.states) {
+      //   this.attributes.states = {
+      //     'default':{
+      //       'points':util.generateCircPoints(8,this.attributes.radius*this.scale),
+      //       'scale':this.attributes.drawScale || 1,
+      //       'drawStyles':{
+      //         'lineWidth':3.0,
+      //         'lineCap':'round',
+      //         'lineJoin':'round',
+      //         'strokeStyle':'#111',
+      //         'fillStyle':'#666666'
+      //       }
+      //     }
+      //   };
+      // }
+      //
+      this.rotationVector = new THREE.Vector3(0,0,1);
 
     },
 
     update : function() {
-      var bpos = this.body.GetPosition();
-      this.attributes.position.x = bpos.x * this.scale;
-      this.attributes.position.y = bpos.y * this.scale;
+      var bpos = this.body.GetPosition(),
+          apos = this.attributes.position,
+          scaleConversion = 35.5,
+          bounds = this.attributes.stage.getBounds(),
+          mpos;
+
+      // position based on b2 body
+      apos.x = bpos.x * this.scale;
+      apos.y = bpos.y * this.scale;
       this.attributes.angle = this.body.GetAngle();
+
+      if(!!this.attributes.model) {
+        model = this.attributes.model;
+        model.position.x = (apos.x - (bounds.x2/2)) / scaleConversion;
+        model.position.y = (-(apos.y - (bounds.y2/2))) / scaleConversion;
+
+        model.quaternion.setFromAxisAngle(this.rotationVector,-this.attributes.angle);
+
+        this.attributes.modelPosition = model.position;        
+      }
+    },
+
+    getModelPosition : function() {
+      return (!!this.attributes.modelPosition) ? this.attributes.modelPosition : null;
+    },
+
+    setModel : function(model) {
+      model.scale.multiplyScalar(5);
+      this.attributes.model = model;
     },
 
     setStates : function(states) {
@@ -100,6 +131,7 @@ define([
       this.body.DestroyFixture(this.fixture);
       this.attributes.physics.getWorld().DestroyBody(this.body);
       this.attributes.stage.removeActor(this);
+      // this.attributes.model.parent.remove(this.attributes.model);
     }
 
   });
