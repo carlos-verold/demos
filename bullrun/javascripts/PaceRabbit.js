@@ -1,7 +1,7 @@
 PaceRabbit = function( veroldApp, speed ) {
 
   this.veroldApp = veroldApp;
-  this.speed = speed !== undefined ? speed : 3.0;
+  this.speed = speed !== undefined ? speed : 3.5;
   this.startingNode = -1;
   this.lastNode = -1;
   this.interNodeProgress = 0;

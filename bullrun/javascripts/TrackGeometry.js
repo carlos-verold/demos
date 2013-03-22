@@ -80,9 +80,9 @@ THREE.TrackGeometry = function( path, segments, trackWidth, trackWidthSegments, 
 
 		if ( this.debug ) {
 
-			this.debug.add( new THREE.ArrowHelper(tangent, pos, trackWidth, 0x0000ff ) );
-			this.debug.add( new THREE.ArrowHelper(normal, pos, trackWidth, 0xff0000 ) );
-			this.debug.add( new THREE.ArrowHelper(binormal, pos, trackWidth, 0x00ff00 ) );
+			this.debug.add( new THREE.ArrowHelper(tangent, pos, 1, 0x0000ff ) );
+			this.debug.add( new THREE.ArrowHelper(normal, pos, 1, 0xff0000 ) );
+			this.debug.add( new THREE.ArrowHelper(binormal, pos, 1, 0x00ff00 ) );
 
 		}
 

@@ -3,9 +3,13 @@ BullRun = function( veroldApp ) {
   this.veroldApp = veroldApp;  
   this.mainScene;
   this.camera;
-  this.numDrivers = 20;
+  this.numDrivers = 10;
   this.numHumanPlayers = 1;
   this.physicsDebugOn = true;
+  this.debug = true;
+
+  this.cameraMode = -1;
+  this.physicsDebugRenderScale = 40;
 }
 
 BullRun.prototype.startup = function( ) {
@@ -34,8 +38,9 @@ BullRun.prototype.startup = function( ) {
 
       //Initialize the debug camera
       that.setupDebugCamera();
+      that.setupCollisionDebugCamera();
 
-      that.physicsSim = new PhysicsController( that.veroldApp );
+      that.physicsSim = new PhysicsController( that.veroldApp, that.physicsDebugRenderScale );
       that.physicsSim.initialize( );
 
       that.setupTrack();
@@ -87,16 +92,28 @@ BullRun.prototype.update = function( delta ) {
 }
 
 BullRun.prototype.cycleCamera = function( ) {
-  if ( !this.driverCameraController.enableUpdates ) {
-    this.debugCameraController.enableUpdates = false;
-    this.driverCameraController.enableUpdates = true;
-    this.veroldApp.setActiveCamera( this.driverCamera );
+  this.cameraMode = (this.cameraMode + 1) % 3;
+  switch ( this.cameraMode ) {
+    case 0: {
+      this.debugCameraController.enableUpdates = false;
+      this.driverCameraController.enableUpdates = true;
+      this.veroldApp.setActiveCamera( this.driverCamera );
+      break;
+    }
+    case 1: {
+      this.debugCameraController.enableUpdates = true;
+      this.driverCameraController.enableUpdates = false;
+      this.veroldApp.setActiveCamera( this.debugCamera );
+      break;
+    }
+    case 2: {
+      this.debugCameraController.enableUpdates = false;
+      this.driverCameraController.enableUpdates = false;
+      this.veroldApp.setActiveCamera( this.collisionDebugCamera );
+      break;
+    }
   }
-  else {
-    this.debugCameraController.enableUpdates = true;
-    this.driverCameraController.enableUpdates = false;
-    this.veroldApp.setActiveCamera( this.debugCamera );
-  }
+  window.camera = this.veroldApp.getActiveCamera();
 }
 
 BullRun.prototype.setupDebugCamera = function() {
@@ -120,6 +137,19 @@ BullRun.prototype.setupDebugCamera = function() {
   
   this.debugCameraController.initialize( debugCameraParams );
   
+}
+
+BullRun.prototype.setupCollisionDebugCamera = function() {
+
+  var aspect = this.veroldApp.getRenderAspect();
+  var lookAtPoint = new THREE.Vector3();
+  var size = this.veroldApp.getRenderHeight() / this.physicsDebugRenderScale;
+  this.collisionDebugCamera = new THREE.OrthographicCamera( 0, size * aspect, 0, -size, 1, 1000);
+  this.collisionDebugCamera.useQuaternion = true;
+  this.collisionDebugCamera.up.set( 0, 0, -1);
+  this.collisionDebugCamera.position.set( 0, 5, 0);
+  this.collisionDebugCamera.lookAt( lookAtPoint );
+  //this.collisionDebugCamera.updateProjectionMatrix();
 }
 
 BullRun.prototype.setupDriverCamera = function( humanDriver ) {
@@ -146,7 +176,7 @@ BullRun.prototype.setupDriverCamera = function( humanDriver ) {
 }
 
 BullRun.prototype.setupTrack = function( ) {
-  this.track = new Track( this.veroldApp );
+  this.track = new Track( this.veroldApp, this.debug );
   this.track.initialize( this.physicsSim, this.mainScene );
 }
 

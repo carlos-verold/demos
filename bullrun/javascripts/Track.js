@@ -1,5 +1,6 @@
-Track = function( veroldApp ) {
+Track = function( veroldApp, debug ) {
 
+  this.debug = debug;
   this.veroldApp = veroldApp;
   this.trackNodes = [];
   this.vehicles = [];
@@ -8,7 +9,7 @@ Track = function( veroldApp ) {
   this.trackNodePositions = [];
 
   //The length of each geometry quad on the track.
-  this.segmentLength = 2;
+  this.segmentLength = 1.5;
   //The number of geometry quads that stetch accross the width of track
   this.segmentsWide = 2;
   //The width of the track
@@ -87,15 +88,16 @@ Track.prototype = {
 
   getNumSegments: function() {
     var trackLength = this.trackCurve.getLength();
-    return Math.floor(trackLength / this.segmentLength);
+    return Math.ceil(trackLength / this.segmentLength);
   },
 
   setupTrackGeometry: function() {
     
     var segments = this.getNumSegments();
-    this.trackGeo = new THREE.TrackGeometry( this.trackCurve, segments, this.trackWidth, this.segmentsWide, this.closedCourse );
+    this.trackGeo = new THREE.TrackGeometry( this.trackCurve, segments, this.trackWidth, this.segmentsWide, this.closedCourse, this.debug );
     this.trackMesh = new THREE.Mesh( this.trackGeo );
     this.scene.threeData.add( this.trackMesh );
+    if ( this.debug ) this.scene.threeData.add( this.trackGeo.debug );
   },
 
   setupTrackCollision: function() {
@@ -104,6 +106,8 @@ Track.prototype = {
     var segments = this.getNumSegments();
 
     var prevPos = this.trackCurve.getPointAt( 0 );
+    console.log( "Position at beginning is ", prevPos );
+    console.log( "Number of segments is " + segments );
     var pos;
     var posAvg = new b2Vec2();
     var binormalAvg = new b2Vec2();
@@ -116,6 +120,8 @@ Track.prototype = {
       var u = i / ( segments );
 
       pos = this.trackCurve.getPointAt( u );
+
+      if ( u == 1 ) console.log( "Position at end is ", pos );
       
       var prevTangent = this.trackGeo.tangents[ i - 1 ];
       var prevNormal = this.trackGeo.normals[ i - 1 ];
@@ -129,33 +135,41 @@ Track.prototype = {
 
         var v = -1 + j * 2;
 
-        cx = ( this.trackWidth + collisionWidth) * 0.5 * v;
+        cx = ( this.trackWidth) * 0.5 * v;
 
         //Calculate the centre of the collision by figuring out the average position and binormal on the curve
         posAvg.Set( (pos.x + prevPos.x) * 0.5, ( pos.z + prevPos.z ) * 0.5 );
         binormalAvg.Set( (binormal.x + prevBinormal.x) * 0.5, ( binormal.z + prevBinormal.z ) * 0.5 );
+
         posAvg.x += cx * binormalAvg.x;
         posAvg.y += cx * binormalAvg.y;
         
-        // Calculate the angle of the collision
-        var angle = Math.atan2( binormalAvg.y, binormalAvg.x ) ;
-
         // Calculate the length that the collision geometry needs to be.
         tempPos1.Set( prevPos.x, prevPos.z );
         tempVec.Set( prevBinormal.x, prevBinormal.z );
-        tempVec.Multiply( 0.5 * this.trackWidth * v );
+        tempVec.Multiply( cx );
         tempPos1.Add( tempVec );
 
         tempPos2.Set( pos.x, pos.z );
         tempVec.Set( binormal.x, binormal.z );
-        tempVec.Multiply( 0.5 * this.trackWidth * v );
+        tempVec.Multiply( cx );
         tempPos2.Add( tempVec );
 
         tempPos2.Subtract( tempPos1 );
-        var length = tempPos2.Length() * 1.2;
+        var length = tempPos2.Length();
+
+        // Calculate the angle of the collision
+        var angle = Math.atan2( tempPos2.y, tempPos2.x ) ;
+
+        //Add half the collision width to posAvg in the direction of the line perp to the edge of the track
+        //Note that this line is not the same as the binormalAvg.
+        tempVec.Set( v * tempPos2.y, -v * tempPos2.x );
+        tempVec.Normalize();
+        tempVec.Multiply( collisionWidth * 0.5 );
+        posAvg.Add( tempVec );
 
         // Create the collision body
-        this.physicsSim.createTrackSideBody( collisionWidth, length, angle, posAvg );
+        this.physicsSim.createTrackSideBody( length, collisionWidth, angle, posAvg, u );
 
       }
 

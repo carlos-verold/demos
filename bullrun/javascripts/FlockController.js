@@ -7,6 +7,7 @@ FlockController = function( veroldApp ) {
   //Controls the distance that drivers need to get to each other before they try to move away.
   this.flockSpread = 2;
   this.spreadStrength = 3;
+  this.flockSpeed = 4;
   window.flock = this;
 }
 
@@ -47,15 +48,19 @@ FlockController.prototype = {
 
       if ( this.drivers[x].vehicle ) {
       
-        var paceRabbitVec = this.drivers[x].tendToPaceRabbit();
-        this.tempVector2D.Set( paceRabbitVec.x, paceRabbitVec.y );
+        this.tempVector2D.Set( 0, 0 );
+        
+        //this.tempVector2D.Add( this.drivers[x].tendToPaceRabbit() );
+
+        //Get each boid to try to follow the track's direction at a certain speed
+        this.tempVector2D.Add( this.drivers[x].tendToTrackDirection( this.flockSpeed ) );
 
         //For each boid, calculate the "centre of mass" of nearby boids and get a vector that represents the desired direction of travel
         this.tempVector2D.Add( this.drivers[x].tendToCentreOfFlock( this.centreOfFlockMultiplier ) );
 
         this.tempVector2D.Add( this.drivers[x].tendToMaintainDistance( this.flockSpread, this.spreadStrength ) );
 
-        this.tempVector2D.Add( this.drivers[x].tendToMatchVelocity() );
+         this.tempVector2D.Add( this.drivers[x].tendToMatchVelocity() );
       
         //Using the combined vector, tell the driver where to go (via the vector)
         this.drivers[x].driveTowards( this.tempVector2D );
@@ -116,7 +121,9 @@ FlockController.prototype = {
       this.physicsSim.world.QueryAABB( function( fixture ) {
         //console.log("Fixture ", fixture, " is near driver # " + driverID );
         if ( fixture.driverID !== undefined ) {
-          that.drivers[ driverID ].localFlockIDs.push( fixture.driverID );
+          //if ( fixture.driverID != driverID ) {
+            that.drivers[ driverID ].localFlockIDs.push( fixture.driverID );
+          //}
         }
         else {
           that.drivers[ driverID ].localStaticCollision.push( fixture );
