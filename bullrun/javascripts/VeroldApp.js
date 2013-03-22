@@ -3,6 +3,8 @@ function VeroldApp( properties ) {
 
   this.veroldEngine = undefined;
 
+  this.isMobileDevice = (/iphone|ipad|ipod|android|blackberry|bb10|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
+
 }
 
 VeroldApp.prototype = {
@@ -31,7 +33,10 @@ VeroldApp.prototype = {
 
     var that = this;
 
-
+    window.onorientationchange = function()
+    {
+      that.trigger("resize");
+    };
     //Get the project assets from the given project ID.
     //If it's not passed in, get a default project.
     options.projectId;
@@ -44,24 +49,23 @@ VeroldApp.prototype = {
       });
 
       that.defaultSceneID = project.get("entityId");
-
-      that.veroldEngine.on( "resize", that.onResize, that );
-
-      window.addEventListener( 'resize', function() {
-        that.veroldEngine.trigger('resize');
-      } );
       
       that.veroldEngine.initialize( {
         "entities": arguments[2], 
         "mainProgramContext" : that, 
         "mainUpdateFunction" : that.update,
         "handleInput" : options.handleInput,
-        "projectId" : options.projectId, 
+        "projectId" : options.projectId,
+        "antialias" : options.antialias,
+        "shadowMapEnabled" : options.shadowMapEnabled,
+        "shadowMapType" : options.shadowMapType,
         "enablePostProcess" : options.enablePostProcess,
         "enablePicking" : options.enablePicking,
         "clearColor" : options.clearColor ? options.clearColor : 0x000000,
-        // "isWritable" : this.isWritable,
-        // "isEmbedded" : this.isEmbedded,
+        "xResMultiplier" : options.xResMultiplier,
+        "yResMultiplier" : options.yResMultiplier,
+        "clearBeforeRender" : options.clearBeforeRender,
+        "forceLowEndRendering" : options.forceLowEndRendering,
       });
 
       //Call callback passed into the boiler plate
@@ -72,7 +76,6 @@ VeroldApp.prototype = {
 
   uninitialize: function() {
 
-    this.veroldEngine.off( "resize", this.onResize, this );
     this.veroldEngine.uninitialize();
     this.veroldEngine = undefined;
 
@@ -102,14 +105,6 @@ VeroldApp.prototype = {
     }
     else {
       console.warn("VeroldApp.trigger() called before the application has been initialized. Call initialize() first.")
-    }
-  },
-
-  // Events
-  onResize: function() {
-    
-    if (this.veroldEngine) {
-      this.veroldEngine.onResize();
     }
   },
 
@@ -213,7 +208,7 @@ VeroldApp.prototype = {
 
   getRenderWidth: function() {
     if ( this.veroldEngine ) {
-      return this.veroldEngine.Renderer.getWidth();
+      return this.veroldEngine.Renderer.getXRes();
     }
     else {
       console.warn("VeroldApp.getRenderWidth() called before the application has been initialized. Call initialize() first.")
@@ -222,6 +217,26 @@ VeroldApp.prototype = {
   },
 
   getRenderHeight: function() {
+    if ( this.veroldEngine ) {
+      return this.veroldEngine.Renderer.getYRes();
+    }
+    else {
+      console.warn("VeroldApp.getRenderHeight() called before the application has been initialized. Call initialize() first.")
+      return null;
+    }
+  },
+
+  getWidth: function() {
+    if ( this.veroldEngine ) {
+      return this.veroldEngine.Renderer.getWidth();
+    }
+    else {
+      console.warn("VeroldApp.getRenderWidth() called before the application has been initialized. Call initialize() first.")
+      return null;
+    }
+  },
+
+  getHeight: function() {
     if ( this.veroldEngine ) {
       return this.veroldEngine.Renderer.getHeight();
     }
@@ -288,5 +303,9 @@ VeroldApp.prototype = {
     } else {
       return true;
     }
+  },
+
+  isMobile : function() {
+    return this.isMobileDevice;
   }
 }

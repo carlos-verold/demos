@@ -13,22 +13,22 @@ build a game or website for a client or business, contact us at info@verold.com 
 
 ### Finished Demos:
 
-* [Falling in Circles](http://developers.verold.com/demos/falling-in-circles)
+* [Falling in Circles](http://api.verold.com/demos/falling-in-circles)
 * [Air Hockey](http://airhockey.jit.su)
 
 ### WIP
 
-* [Asteroids](http://developers.verold.com/demos/asteroids)
-* [BlackBerry Experience](http://developers.verold.com/demos/blackberry-experience)
-* [BlackBerry Experience 2](http://developers.verold.com/demos/blackberry-experience2)
-* [Box2D Demo](http://developers.verold.com/demos/box2d-demo)
-* [Bullrun](http://developers.verold.com/demos/bullrun)
-* [CannonJS](http://developers.verold.com/demos/cannonjs)
-* [Tyga Rack City](http://developers.verold.com/demos/car-demo)
-* [Carnegie Hall of Architecture](http://developers.verold.com/demos/carnegie)
-* [Dungeon Crawler](http://developers.verold.com/demos/dungeon)
-* [Stirling Inch Gangnam](http://developers.verold.com/demos/stirling-inch-gangnam)
-* [Tanks](http://developers.verold.com/demos/tanks)
+* [Asteroids](http://api.verold.com/demos/asteroids)
+* [BlackBerry Experience](http://api.verold.com/demos/blackberry-experience)
+* [BlackBerry Experience 2](http://api.verold.com/demos/blackberry-experience2)
+* [Box2D Demo](http://api.verold.com/demos/box2d-demo)
+* [Bullrun](http://api.verold.com/demos/bullrun)
+* [CannonJS](http://api.verold.com/demos/cannonjs)
+* [Tyga Rack City](http://api.verold.com/demos/car-demo)
+* [Carnegie Hall of Architecture](http://api.verold.com/demos/carnegie)
+* [Dungeon Crawler](http://api.verold.com/demos/dungeon)
+* [Stirling Inch Gangnam](http://api.verold.com/demos/stirling-inch-gangnam)
+* [Tanks](http://api.verold.com/demos/tanks)
 
 
 

@@ -7,7 +7,7 @@ DebugCameraController = function( properties ) {
   this._moveVector = new THREE.Vector3();
   
   this.enablePointerLock = false;
-  this.enableUpdates = true;
+  this.enableUpdates = false;
 }
 
 DebugCameraController.prototype = {

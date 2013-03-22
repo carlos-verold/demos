@@ -9,10 +9,12 @@
   <script type="text/javascript" src="javascripts/underscore.js"></script>
   <script type="text/javascript" src="javascripts/VeroldApp.js"></script>
   <script type="text/javascript" src="javascripts/DebugCameraController.js"></script>
+  <script type="text/javascript" src="javascripts/DriverCameraController.js"></script>
 
   <script type="text/javascript" src="javascripts/physics/Box2D.js"></script>
   <script type="text/javascript" src="javascripts/PhysicsController.js"></script>
   
+  <script type="text/javascript" src="javascripts/TrackGeometry.js"></script>
   <script type="text/javascript" src="javascripts/TrackNode.js"></script>
   <script type="text/javascript" src="javascripts/Track.js"></script>
   <script type="text/javascript" src="javascripts/Vehicle.js"></script>
@@ -47,10 +49,12 @@
         container : null,
         projectId : "5137ad1a13ccb80200000529",
         enablePostProcess: false,
+        antialias: !veroldApp.isMobile(),
         enablePicking: false,
-        antialias: true,
+        shadowMapEnabled: true,
         handleInput: true,
         clearColor: 0xff0000,
+        forceLowEndRendering: veroldApp.isMobile(),
         success: function() {
           myApp.startup();
         }

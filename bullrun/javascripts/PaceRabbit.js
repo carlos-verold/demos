@@ -1,13 +1,14 @@
 PaceRabbit = function( veroldApp, speed ) {
 
   this.veroldApp = veroldApp;
-  this.speed = speed !== undefined ? speed : 2.0;
+  this.speed = speed !== undefined ? speed : 3.0;
   this.startingNode = -1;
   this.lastNode = -1;
   this.interNodeProgress = 0;
   this.currentDifferenceVector = new THREE.Vector3();
 
   this.maxDriverDistance = 3;
+  this.time = 0;
 }
 
 PaceRabbit.prototype = {
@@ -31,6 +32,9 @@ PaceRabbit.prototype = {
     }
 
     this.initLocation();
+
+    //Figure out estimated time to finish a lap
+    this.lapTime = this.track.trackCurve.getLength() / this.speed;
   },
 
   uninitialize : function() {
@@ -43,22 +47,26 @@ PaceRabbit.prototype = {
   },
 
   update : function( delta ) {
-    //if ( this.goBunny ) {
-      if ( this.interNodeProgress >= 1.0 ) {
-        this.interNodeProgress = this.interNodeProgress % 1.0;
-        this.lastNode = this.nextNode;
-        this.nextNode = (this.lastNode + 1) % this.track.getNumTrackNodes();
-        
-      }
-      var lastNode = this.track.getTrackNode( this.lastNode );
-      var nextNode = this.track.getTrackNode( this.nextNode );
-      this.currentDifferenceVector.subVectors( nextNode.getPosition(), lastNode.getPosition() );
+    this.time += delta;
+    var t = ( this.time % this.lapTime ) / this.lapTime;
+    var pos = this.track.trackCurve.getPointAt( t );
 
-      var lastNodePos = lastNode.getPosition();
-      var progressStep = (this.speed * delta) / this.currentDifferenceVector.length();
-      this.interNodeProgress += progressStep;
-      this.currentDifferenceVector.multiplyScalar( this.interNodeProgress );
-      this.model.threeData.position.addVectors( lastNodePos, this.currentDifferenceVector );
+      // if ( this.interNodeProgress >= 1.0 ) {
+      //   this.interNodeProgress = this.interNodeProgress % 1.0;
+      //   this.lastNode = this.nextNode;
+      //   this.nextNode = (this.lastNode + 1) % this.track.getNumTrackNodes();
+        
+      // }
+      // var lastNode = this.track.getTrackNode( this.lastNode );
+      // var nextNode = this.track.getTrackNode( this.nextNode );
+      // this.currentDifferenceVector.subVectors( nextNode.getPosition(), lastNode.getPosition() );
+
+      // var lastNodePos = lastNode.getPosition();
+      // var progressStep = (this.speed * delta) / this.currentDifferenceVector.length();
+      // this.interNodeProgress += progressStep;
+      // this.currentDifferenceVector.multiplyScalar( this.interNodeProgress );
+      
+      this.model.threeData.position.set( pos.x, pos.y, pos.z );// addVectors( lastNodePos, this.currentDifferenceVector );
       
     //}
 
