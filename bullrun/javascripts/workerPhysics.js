@@ -1,4 +1,4 @@
-import("physics/Box2D.js");
+importScripts("physics/Box2D.js");
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2
         ,       b2BodyDef = Box2D.Dynamics.b2BodyDef
@@ -18,7 +18,7 @@ self.onmessage = function (event) {
 };  
 
     //Create the physics world and initialize it.
-    this.world = new b2World( 
+    var world = new b2World( 
       new b2Vec2(0, 0) //gravity
       , true //allow sleep
     );

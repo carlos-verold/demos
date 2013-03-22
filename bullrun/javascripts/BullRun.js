@@ -40,7 +40,7 @@ BullRun.prototype.startup = function( ) {
       that.setupDebugCamera();
       that.setupCollisionDebugCamera();
 
-      //that.setupPhysicsWorker();
+      that.setupPhysicsWorker();
 
       that.physicsSim = new PhysicsController( that.veroldApp, that.physicsDebugRenderScale );
       that.physicsSim.initialize( );
@@ -94,7 +94,7 @@ BullRun.prototype.update = function( delta ) {
 }
 
 BullRun.prototype.setupPhysicsWorker = function() {
-  this.physicsWorker = new Worker( "workerPhysics.js" );
+  this.physicsWorker = new Worker( "javascripts/workerPhysics.js" );
   this.physicsWorker.onmessage = function (event) {
     //Received update from physics worker
   };
