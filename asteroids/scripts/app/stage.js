@@ -5,13 +5,17 @@ define([
   'app/util',
   'app/point',
   'app/actorfactory',
-  'app/physics'
+  'app/physics',
+  'app/canvaswrapper',
+  'app/userinterface'
 ], function(
   my,
   util,
   Point,
   ActorFactory,
-  Physics
+  Physics,
+  CanvasWrapper,
+  UserInterface
 ){
 
   var Stage = my.Class((function () {
@@ -66,6 +70,8 @@ define([
 
         veroldApps = null;
 
+        // ui = new UserInterface(new CanvasWrapper($('<canvas id="ui">').appendTo('body')));
+
     // set up key event listeners
     $(document).keydown(function(e) {
       try {
@@ -89,7 +95,7 @@ define([
         physics = new Physics({
           gravity: {x:0,y:0}
           , scale: 10
-          , debug: true
+          // , debug: true
         });
         actorFactory = new ActorFactory({'stage':this});
       },
@@ -118,13 +124,16 @@ define([
       },
 
       getBounds : function() {
-        var b = $('body');
-        return {
-            x1 : 0,
-            y1 : 0,
-            x2 : b.outerWidth(false),
-            y2 : b.outerHeight(false)
-        };
+        var b = $('body'),
+            bounds = {
+              x1 : 0,
+              y1 : 0,
+              x2 : b.outerWidth(false),
+              y2 : b.outerHeight(false)
+            };
+
+        // console.info(bounds);
+        return bounds;
       },
 
       getKeys : function() {
@@ -146,7 +155,7 @@ define([
         world.DrawDebugData();
         world.ClearForces();
         this.purgeDeadActors();
-        this.updateInfoPanel();
+        // this.updateInfoPanel();
       },
 
       render : function(time) {
@@ -222,7 +231,9 @@ define([
       },
 
       createActor : function(config) {
-        this.addActor(actorFactory.createActor(config));
+        var actor = actorFactory.createActor(config);
+        this.addActor(actor);
+        return actor;
       },
 
       setContactListeners : function(callbacks) {

@@ -2,8 +2,7 @@
 var AppUI = (function() {
 
   var tabContainer,
-      tabContainerScroll,
-      shareToolInitialized = false;
+      tabContainerScroll;
 
   return {
     
@@ -27,34 +26,10 @@ var AppUI = (function() {
 
     showMenus : function() {
       $('.menu').show();
-      if(!shareToolInitialized) {
-        this.initShareTools();
-      }
     },
 
     hideMenus : function() {
       $('.menu').hide();
-    },
-
-    initShareTools : function() {
-      shareToolInitialized = true;
-      // gplus share functionality can
-      // only be envoked when share
-      // button parent div is visible
-      (function() {
-        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-        po.src = 'https://apis.google.com/js/plusone.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-      })();
-
-      // facebook
-      (function(d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s); js.id = id;
-      js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
-      fjs.parentNode.insertBefore(js, fjs);
-      }(document, 'script', 'facebook-jssdk'));
     },
 
     webGLDisabled : function() {
@@ -78,14 +53,13 @@ var AppUI = (function() {
     showUI : function() {
       this.hideHeaders();
       this.showMenus();
-      this.showInstructions();
+      this.initInstructions();
     },
 
-    showInstructions : function() {
+    initInstructions : function() {
       var ins = $('#instructions');
-      ins.show();
       ins.find('.close').click(function(e){
-        ins.hide();
+        $('#helpLink').click();
       });
     },
 
@@ -120,17 +94,38 @@ var AppUI = (function() {
     initControlsOverlay : function(exEventHandlers) { },
 
     initInfoOverlay : function() {
-      var infoPanel = $('#info-panel');
-      $('#infoLink').click(function(e){
+      this.initMenuLink('#infoLink','#info-panel','icon-project');
+      this.initMenuLink('#helpLink','#instructions','icon-help-alt');
+      $('#helpLink').click();
+    },
+
+    initMenuLink : function(linkSelector,panelSelector,className) {
+      var that = this,
+          panel = $(panelSelector),
+          link = $(linkSelector);
+
+      link.click(function(e){
+        that.hidePanels(linkSelector,panelSelector);
         var target = $(e.target);
-        if(infoPanel.is(':visible')) {
-          console.info(target);
-          target.addClass('icon-project').removeClass('icon-close');
-          infoPanel.hide();
+        if(target.is('i')) { target = target.parent('a'); }
+        if(panel.is(':visible')) {
+          target.find('i').removeClass('icon-close').addClass(className);
+          panel.hide();
         } else {
-          target.removeClass('icon-project').addClass('icon-close');
-          infoPanel.show();
+          target.find('i').removeClass(className).addClass('icon-close');
+          panel.show();
         }
+      });
+    },
+
+    hidePanels : function(linkSelector,panelSelector) {
+      var panelsToHide = $('.panel').not(panelSelector),
+      linksToReset = $('#mainMenu a').not(linkSelector);
+
+      panelsToHide.hide();
+      linksToReset.each(function(index,link) {
+        var i = $(link).find('i');
+        i.removeClass('icon-close').addClass(i.attr('data-defaultClass'));
       });
     }
 

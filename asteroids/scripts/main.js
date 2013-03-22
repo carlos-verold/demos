@@ -8,7 +8,10 @@ requirejs.config({
     underscore : 'underscore-min',
     handlebars : 'handlebars-1.0.0.beta.6',
     myclass : 'my.class',
-    Box2D : 'Box2D'
+    Box2D : 'Box2D',
+    verold_api_v1 : 'http://assets.verold.com/verold_api/verold_api_v1_norequire',
+    VeroldApp : '../app/VeroldApp',
+    AsteroidsApp : '../app/AsteroidsApp'
   },
   shim : {
     underscore : {
@@ -22,6 +25,12 @@ requirejs.config({
     },
     Box2D : {
       exports : 'Box2D'
+    },
+    VeroldApp : {
+      exports : 'VeroldApp'
+    },
+    AsteroidsApp : {
+      exports : 'AsteroidsApp'
     }
   }
 });
@@ -32,7 +41,10 @@ requirejs([
   'Box2D',
   'jquery',
   'underscore',
-  'handlebars'
+  'handlebars',
+  'verold_api_v1',
+  'VeroldApp',
+  'AsteroidsApp'
 ],
 function(app) {
   $(document).ready(function() {
@@ -52,11 +64,12 @@ function(app) {
         handleInput: false,
         clearColor: 0xff0000,
         success: function() {
-          asteroidsApp.startup();
-          app.start(veroldApps);
+          asteroidsApp.startup(function() {
+            app.start(veroldApps);
+          });
         }
-      })
+      });
 
-    })
-  })
+    });
+  });
 });
