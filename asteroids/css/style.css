@@ -115,3 +115,32 @@ body {
   left: 0;
   z-index: 100;
 }
+
+#loading-progress-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -150px;
+  margin-top: -20px;
+  width: 300px;
+  height: 40px;
+  color: #44ABDA;
+  border: 1px solid #fff;
+}
+
+#loading-progress-container p {
+  margin-bottom:10px;
+  text-align: center;
+  font-size: 16px;
+}
+
+#loading-progress-container .loading-progress {
+  border: 1px solid #44ABDA;
+  height: 5px;
+}
+
+#loading-progress-container .loading-progress div {
+  width: 1px;
+  background: #44ABDA;
+  height: 100%;
+}

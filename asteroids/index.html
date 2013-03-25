@@ -1,21 +1,28 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
-        <link rel="stylesheet" href="./css/style.css" type="text/css" media="screen" charset="utf-8" />
-        <title>Verold Asteroids!</title>
-    </head>
-    <body>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <link rel="stylesheet" href="./css/style.css" type="text/css" media="screen" charset="utf-8" />
+    <title>Verold Asteroids!</title>
+  </head>
+  <body>
 
-        <pre id="infoPanel">&nbsp;</pre>
+    <div id="loading-progress-container">
+    
+      <p>Loading...</p>
+      <div class="loading-progress">
+        <div>&nbsp;</div>
+      </div>
 
-        <script data-main="./scripts/main.js" src="./scripts/lib/require.js" type="text/javascript" charset="utf-8"></script>
+    </div>
 
-        <script id="info-panel-template" type="text/x-handlebars-template" charset="utf-8">
-            <ul>
-                {{#each infoItems}}<li><span>{{label}}:</span> {{value}}</li>{{/each}}
-            </ul>
-        </script>
-    </body>
+    <script data-main="./scripts/main.js" src="./scripts/lib/require.js" type="text/javascript" charset="utf-8"></script>
+
+    <script id="info-panel-template" type="text/x-handlebars-template" charset="utf-8">
+      <ul>
+        {{#each infoItems}}<li><span>{{label}}:</span> {{value}}</li>{{/each}}
+      </ul>
+    </script>
+  </body>
 </html>
