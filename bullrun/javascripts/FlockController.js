@@ -20,7 +20,7 @@ FlockController.prototype = {
     this.track = track;
 
     this.physicsSim = physicsSim;
-    this.physicsSim.createVehicleBodies( numDrivers );
+    //this.physicsSim.createVehicleBodies( numDrivers );
     this.initDrivers( numDrivers );
     this.initVehicles( numDrivers );
 
@@ -44,7 +44,7 @@ FlockController.prototype = {
     //Run flocking rules for each boid
     //First, we'll update the local information for each driver
     for ( var x in this.drivers ) {
-      this.updateLocalFlockInfo( x );
+      //this.updateLocalFlockInfo( x );
 
       if ( this.drivers[x].vehicle ) {
       
@@ -85,9 +85,9 @@ FlockController.prototype = {
 
     function _initVehicle( num ) {
       //Create the car and place it on the track
-      var physicsFixture = that.physicsSim.getVehicleFixture( num );
-      physicsFixture.driverID = num;
-      var physicsBody = that.physicsSim.getVehicleBody( num );
+      //var physicsFixture = that.physicsSim.getVehicleFixture( num );
+      //physicsFixture.driverID = num;
+      //var physicsBody = that.physicsSim.getVehicleBody( num );
       var newCar = new Vehicle( veroldApp, that.drivers[num] );
       newCar.initialize( that.track, {
         success: function( newVehicle ) {
@@ -95,7 +95,7 @@ FlockController.prototype = {
           that.vehicles.push( newVehicle );
           that.track.spawnVehicle( newVehicle );
         }
-      }, physicsBody, physicsFixture );
+      } );
     };
 
     var that = this;

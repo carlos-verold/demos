@@ -94,11 +94,19 @@ BullRun.prototype.update = function( delta ) {
 }
 
 BullRun.prototype.setupPhysicsWorker = function() {
+  var that = this;
   this.physicsWorker = new Worker( "javascripts/workerPhysics.js" );
   this.physicsWorker.onmessage = function (event) {
     //Received update from physics worker
+    for ( var x in event.data ) {
+      that.track.vehicle[x].setPosition2D( event.data[x].position );
+      that.track.vehicle[x].setAngle( event.data[x].angle );
+      that.track.vehicle[x].setVelocity2D( event.data[x].velocity );
+      that.track.vehicle[x].setAngularVelocity( event.data[x].angularVelocity );
+    }
   };
-  this.physicsWorker.postMessage("Start");
+  //Execute the worker but don't start its update loop.
+  this.physicsWorker.postMessage("");
 }
 
 BullRun.prototype.cycleCamera = function( ) {
@@ -187,12 +195,12 @@ BullRun.prototype.setupDriverCamera = function( humanDriver ) {
 
 BullRun.prototype.setupTrack = function( ) {
   this.track = new Track( this.veroldApp, this.debug );
-  this.track.initialize( this.physicsSim, this.mainScene );
+  this.track.initialize( this.physicsWorker, this.mainScene );
 }
 
 BullRun.prototype.setupFlockController = function( track ) {
   this.flock = new FlockController( this.veroldApp );
-  this.flock.initialize( this.physicsSim, track, this.numDrivers, this.numHumanPlayers );
+  this.flock.initialize( this.physicsWorker, track, this.numDrivers, this.numHumanPlayers );
 }
 
 BullRun.prototype.onKeyPress = function( event ) {

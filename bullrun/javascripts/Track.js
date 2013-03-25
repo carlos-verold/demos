@@ -169,7 +169,17 @@ Track.prototype = {
         posAvg.Add( tempVec );
 
         // Create the collision body
-        this.physicsSim.createTrackSideBody( length, collisionWidth, angle, posAvg, u );
+        var trackObjData = { 
+          name: "createTrackObject",
+          data: {
+            length: length,
+            width: collisionWidth,
+            angle: angle,
+            position: { x: posAvg.x, y: posAvg.y },
+            trackPos: u
+          }
+        }
+        this.physicsSim.postMessage( trackObjData );
 
       }
 
@@ -191,6 +201,7 @@ Track.prototype = {
     var position = this.trackCurve.getPointAt( t );
 
     var binormal = this.trackGeo.binormals[ segments - Math.floor(this.vehicles.length * 0.3333) ];
+    var tangent = this.trackGeo.tangents[ segments - Math.floor(this.vehicles.length * 0.3333) ];
     var lateralPos = this.vehicles.length % 3;
     if ( lateralPos == 0 ) {
       position.sub( binormal);
@@ -198,9 +209,21 @@ Track.prototype = {
     else if ( lateralPos == 2 ) {
       position.add( binormal );
     }
+    var angle = Math.atan2( tangent.z, tangent.x );
 
+    // Create the physics data for the vehicle
+    var vehicleData = { 
+      name: "createVehicle",
+      data: {
+        length: 0.5,
+        width: 0.2,
+        angle: angle,
+        position: { x: position.x, y: position.y },
+      }
+    }
+    this.physicsSim.postMessage( vehicleData );
     vehicle.setPosition( position );
-    //vehicle.setAngle( Math.random() * 2.0 * Math.PI );
+    vehicle.setAngle( angle );
     this.scene.addChildObject( vehicle.getModel() );
   }
 
