@@ -67,7 +67,6 @@ define([
     
       VAPI.onReady(function(){
 
-  console.log(ui);
         var veroldApp = new VeroldApp(),
             asteroidsApp = new AsteroidsApp(veroldApp,ui);
 

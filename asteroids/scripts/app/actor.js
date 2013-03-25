@@ -93,12 +93,12 @@ define([
 
       if(!!this.attributes.model) {
         model = this.attributes.model;
-        model.position.x = (apos.x - (bounds.x2/2)) / scaleConversion;
-        model.position.y = (-(apos.y - (bounds.y2/2))) / scaleConversion;
+        model.threeData.position.x = (apos.x - (bounds.x2/2)) / scaleConversion;
+        model.threeData.position.y = (-(apos.y - (bounds.y2/2))) / scaleConversion;
 
-        model.quaternion.setFromAxisAngle(this.rotationVector,-this.attributes.angle);
+        model.threeData.quaternion.setFromAxisAngle(this.rotationVector,-this.attributes.angle);
 
-        this.attributes.modelPosition = model.position;        
+        this.attributes.modelPosition = model.threeData.position;        
       }
     },
 
@@ -107,7 +107,7 @@ define([
     },
 
     setModel : function(model) {
-      model.scale.multiplyScalar(5);
+      model.threeData.scale.multiplyScalar(5);
       this.attributes.model = model;
     },
 
@@ -131,7 +131,9 @@ define([
       this.body.DestroyFixture(this.fixture);
       this.attributes.physics.getWorld().DestroyBody(this.body);
       this.attributes.stage.removeActor(this);
-      // this.attributes.model.parent.remove(this.attributes.model);
+      if(!!this.attributes.model) {
+        this.attributes.model.getParentAsset().removeChildObject(this.attributes.model);
+      }
     }
 
   });

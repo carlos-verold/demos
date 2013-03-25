@@ -49,9 +49,11 @@ AsteroidsApp.prototype.startup = function( gameCallback ) {
       // remove initial model
       that.mainScene.removeChildObject(that.asteroid_template);
 
-      var model = models[ _.keys( models )[0] ].threeData;
-      that.ship = model;
-      
+      that.ship = models[ _.keys( models )[0] ];
+      var model = that.ship.threeData;
+
+      console.info(that.ship);
+
       //Create the camera
       var width = $(window).width();
       var height = $(window).height();
@@ -73,6 +75,8 @@ AsteroidsApp.prototype.startup = function( gameCallback ) {
       that.veroldApp.setActiveCamera( that.camera );
 
       if(!!gameCallback) { gameCallback(); }
+
+      that.ui.hideLoadingProgress();
 
     },
 
@@ -106,7 +110,7 @@ AsteroidsApp.prototype.createAsteroidModel = function(callback) {
           obj.threeData.quaternion.setFromEuler(vec3);
         }
       });
-      if(!!callback) { callback(clonedAsteroid.threeData); }
+      if(!!callback) { callback(clonedAsteroid); }
     }
   })
 
