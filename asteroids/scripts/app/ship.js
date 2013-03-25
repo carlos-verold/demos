@@ -22,8 +22,6 @@ define([
       this.attributes = {},
       this.attributes = _.extend(this.attributes,config);
 
-      console.info(this.attributes.model);
-
       this.nose = new Point(40,0); 
 
       this.attributes.states = {
