@@ -1,8 +1,8 @@
-PhysicsController = function( veroldApp ) {
+PhysicsController = function( veroldApp, physicsDebugRenderScale ) {
 
   this.veroldApp = veroldApp;
   this.world = undefined;
-
+  this.physicsDebugRenderScale = physicsDebugRenderScale;
   this.trackBodies = [];
   this.trackFixtures = [];
 }
@@ -46,10 +46,10 @@ PhysicsController.prototype = {
     document.body.appendChild( this.debugCanvas );
     //var context = this.veroldApp.getRenderer().domElement.getContext("2d");
     this.debugDraw.SetSprite( this.debugCanvas.getContext("2d") );
-    this.debugDraw.SetDrawScale( 50.0 );
+    this.debugDraw.SetDrawScale( this.physicsDebugRenderScale );
     this.debugDraw.SetFillAlpha( 0.3 );
     this.debugDraw.SetLineThickness( 1.0 );
-    this.debugDraw.SetFlags( b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit );
+    this.debugDraw.SetFlags( b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit | b2DebugDraw.e_aabbBit );
     this.world.SetDebugDraw( this.debugDraw );
     this.toggleDebugDraw( false );
          
@@ -95,7 +95,7 @@ PhysicsController.prototype = {
     }
   },
 
-  createTrackSideBody: function( length, width, angle, position ) {
+  createTrackSideBody: function( length, width, angle, position, trackPos ) {
     
     var fixDef = new b2FixtureDef;
        fixDef.density = 1.0;
@@ -120,6 +120,9 @@ PhysicsController.prototype = {
 
       body.SetPosition( position );
       body.SetAngle( angle );
+
+      //This will be used later to determine a driver's track progress
+      fixture.trackPos = trackPos;
     //}
   },
 

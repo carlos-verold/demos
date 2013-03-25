@@ -226,6 +226,16 @@ VeroldApp.prototype = {
     }
   },
 
+  getRenderAspect: function() {
+    if ( this.veroldEngine ) {
+      return this.veroldEngine.Renderer.getXRes() / this.veroldEngine.Renderer.getYRes();
+    }
+    else {
+      console.warn("VeroldApp.getRenderAspect() called before the application has been initialized. Call initialize() first.")
+      return null;
+    }
+  },
+
   getWidth: function() {
     if ( this.veroldEngine ) {
       return this.veroldEngine.Renderer.getWidth();
@@ -242,6 +252,16 @@ VeroldApp.prototype = {
     }
     else {
       console.warn("VeroldApp.getRenderHeight() called before the application has been initialized. Call initialize() first.")
+      return null;
+    }
+  },
+
+  getAspect: function() {
+    if ( this.veroldEngine ) {
+      return this.veroldEngine.Renderer.getWidth() / this.veroldEngine.Renderer.getHeight();
+    }
+    else {
+      console.warn("VeroldApp.getRenderAspect() called before the application has been initialized. Call initialize() first.")
       return null;
     }
   },

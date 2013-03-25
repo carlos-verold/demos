@@ -1,4 +1,4 @@
-AsteroidsApp = function( veroldApp ) {
+AsteroidsApp = function(veroldApp,ui) {
 
   this.veroldApp = veroldApp;  
   this.mainScene;
@@ -11,6 +11,7 @@ AsteroidsApp = function( veroldApp ) {
   var width = $(window).width(), height = $(window).height();
   this.orthTop = 14;
   this.orthBottom = this.orthTop;
+  this.ui = ui;
   
 }
 
@@ -44,7 +45,7 @@ AsteroidsApp.prototype.startup = function( gameCallback ) {
       var models = that.mainScene.getAllObjects( { "filter" :{ "model" : true }});
 
       // saving reference to asteroid model (template)
-      that.asteroid_template = that.mainScene.getObject('51421a1f1c8a9402000006a9');
+      that.asteroid_template = that.mainScene.getObject('514d18e34ad09902000005a9');
       // remove initial model
       that.mainScene.removeChildObject(that.asteroid_template);
 
@@ -77,7 +78,7 @@ AsteroidsApp.prototype.startup = function( gameCallback ) {
 
     progress: function(sceneObj) {
       var percent = Math.floor((sceneObj.loadingProgress.loaded_hierarchy / sceneObj.loadingProgress.total_hierarchy)*100);
-      that.veroldApp.setLoadingProgress(percent); 
+      that.ui.setLoadingProgress(percent); 
     }
 
   });

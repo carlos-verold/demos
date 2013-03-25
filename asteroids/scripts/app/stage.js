@@ -6,16 +6,14 @@ define([
   'app/point',
   'app/actorfactory',
   'app/physics',
-  'app/canvaswrapper',
-  'app/userinterface'
+  'app/canvaswrapper'
 ], function(
   my,
   util,
   Point,
   ActorFactory,
   Physics,
-  CanvasWrapper,
-  UserInterface
+  CanvasWrapper
 ){
 
   var Stage = my.Class((function () {
@@ -69,8 +67,6 @@ define([
         actorFactory = null,
 
         veroldApps = null;
-
-        // ui = new UserInterface(new CanvasWrapper($('<canvas id="ui">').appendTo('body')));
 
     // set up key event listeners
     $(document).keydown(function(e) {

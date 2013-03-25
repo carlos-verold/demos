@@ -1,11 +1,26 @@
 /*global define:true */
 
-define(['app/stage','app/actorfactory','app/util','app/customevents'],
-function(Stage,ActorFactory,util,CustomEvents) {
+define([
+  'app/stage',
+  'app/actorfactory',
+  'app/util',
+  'app/customevents',
+  'app/userinterface'
+] , function(
+  Stage,
+  ActorFactory,
+  util,
+  CustomEvents,
+  UserInterface
+) {
+
 
   var stage = new Stage(),
       gameActions,
-      veroldApps;
+      veroldApps,
+      ui = new UserInterface();
+
+  // ui = new UserInterface(new CanvasWrapper($('<canvas id="ui">').appendTo('body')));
 
   window.asteroids = {};
   window.asteroids.events = new CustomEvents();
@@ -29,6 +44,7 @@ function(Stage,ActorFactory,util,CustomEvents) {
     }
   });
 
+
   gameActions = {
     start : function(){
 
@@ -43,6 +59,38 @@ function(Stage,ActorFactory,util,CustomEvents) {
       }
 
       stage.initAnim();
+    },
+
+    initVAPI : function() {
+
+      var that = this;
+    
+      VAPI.onReady(function(){
+
+  console.log(ui);
+        var veroldApp = new VeroldApp(),
+            asteroidsApp = new AsteroidsApp(veroldApp,ui);
+
+        veroldApps = {
+          verold: veroldApp,
+          asteroids: asteroidsApp
+        };
+
+        veroldApp.initialize({
+          container: null,
+          projectId: '514219ce0b4e5d0200000344',
+          enablePostProcess: false,
+          enablePicking: false,
+          handleInput: false,
+          clearColor: 0xff0000,
+          success: function() {
+            asteroidsApp.startup(function() {
+              that.start();
+            });
+          }
+        });
+
+      });
     },
 
     addAsteroid : function() {
@@ -80,9 +128,8 @@ function(Stage,ActorFactory,util,CustomEvents) {
   };
 
   return {
-    start : function(vapps) {
-      veroldApps = vapps;
-      gameActions.start();
+    start : function() {
+      gameActions.initVAPI();
     }
   };
 

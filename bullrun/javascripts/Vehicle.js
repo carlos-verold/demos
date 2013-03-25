@@ -15,15 +15,21 @@ Vehicle = function( veroldApp, driver ) {
   this.ai_steering = 0;
   this.accel = false;
   this.steering = 0;
-  this.directionVector2D = null;
-  
+  this.directionVector2D = new b2Vec2();
+
+  this.angle2D;
+  this.position2D = new b2Vec2();
+  this.velocity2D = new b2Vec2();
+  this.orientation2D = new THREE.Quaternion();
+  this.torque;
+  this.angularVelocity;
 }
 
 Vehicle.prototype = {
 
   constructor: Vehicle,
 
-  initialize : function( track, options, physicsBody, physicsFixture ) {
+  initialize : function( track, options ) {
 
     this.track = track;
     var that = this;
@@ -33,12 +39,13 @@ Vehicle.prototype = {
 
     this.directionVector = new THREE.Vector3();
     this.tempVector_1 = new THREE.Vector3();
+    this.tempVector_2 = new THREE.Vector3();
     this.tempQuaternion1 = new THREE.Quaternion();
     this.tempQuaternion2 = new THREE.Quaternion();
     
 
-    this.physicsBody = physicsBody;
-    this.physicsFixture = physicsFixture;
+    //this.physicsBody = physicsBody;
+    //this.physicsFixture = physicsFixture;
 
     this.forceVector = new b2Vec2(0,0);
     this.steerForceVector = new b2Vec2(0,0);
@@ -51,6 +58,8 @@ Vehicle.prototype = {
     //this.physicsBody.SetLinearDamping( 0.1 );
     this.tireResist = new b2Vec2(0.03,0.8);
     this.tempVector2D_1 = new b2Vec2(0,0);
+    this.tempVector2D_2 = new b2Vec2(0,0);
+    this.tempVector2D_3 = new b2Vec2(0,0);
     this.dampingForce = new b2Vec2(0,0);
 
     carModel.load( {
@@ -97,17 +106,18 @@ Vehicle.prototype = {
   update : function( delta ) {
     //From physics body, set the transform of the graphical vehicle.
     //this.track.
-    var pos = this.physicsBody.GetPosition();
-    var angle = this.physicsBody.GetAngle();
+    // var pos = this.physicsBody.GetPosition();
+    // var angle = this.physicsBody.GetAngle();
     
     //this.forceVector.y is the lateral force that is being applied to the vehicle.
-    var roll = this.physicsBody.GetLocalVector( this.forceVector ).y;
+    console.log("TODO: still need to convert force vector into local space to determine the roll")
+    var roll = 0;//this.physicsBody.GetLocalVector( this.forceVector ).y;
     roll = Math.max( Math.min( roll, 1.0 ), -1.0 );
     roll *= 0.2;
-    this._setVehicleOrientation( angle );
+    this._setVehicleOrientation( this.angle2D );
     this._setVehicleRoll( roll );
     
-    this.model.set( {"payload.position" : { x: pos.x, y: 0, z: pos.y }} );
+    this.model.set( {"payload.position" : { x: this.position2D.x, y: 0, z: this.position2D.y }} );
   },
 
   fixedUpdate : function( delta ) {
@@ -119,11 +129,11 @@ Vehicle.prototype = {
   setPosition: function( position ) {
     //Set the graphical body position and the physics body
     this.model.set( {"payload.position" : { x: position.x, y: position.y, z: position.z}});
-    this.physicsBody.SetPosition( new b2Vec2( position.x, position.z ) );
+    //this.physicsBody.SetPosition( new b2Vec2( position.x, position.z ) );
   },
 
   getPosition2D: function() {
-    return this.physicsBody.GetPosition();
+    return this.position2D;
   },
 
   getPosition: function() {
@@ -131,8 +141,8 @@ Vehicle.prototype = {
   },
 
   setAngle: function( radians ) {
-    this._setVehicleAngle( radians );
-    this.physicsBody.SetAngle( radians );
+    this._setVehicleOrientation( radians );
+    //this.physicsBody.SetAngle( radians );
   },
 
   _setVehicleOrientation: function( radians ) {
@@ -171,68 +181,69 @@ Vehicle.prototype = {
   },
 
   getVelocity2D: function() {
-    return this.physicsBody.GetLinearVelocity();
+    return this.velocity2D;
+  },
+
+  _getWorldVectorFromLocal2D: function( localVec, outWorldVec ) {
+    this.tempVector_2.set( localVec.x, 0, localVec.y );
+    this.tempVector_2.applyQuaternion( this.orientation2D );
+    outWorldVec.Set( this.tempVector_2.x, this.tempVector_2.z );
+  },
+
+  _getLocalVectorFromWorld2D: function( worldVec, outLocalVec ) {
+    this.tempVector_2.set( worldVec.x, 0, worldVec.y );
+    this.tempVector_2.applyQuaternion( this.orientation2D );
+    outLocalVec.Set( this.tempVector_2.x, this.tempVector_2.z );
   },
 
   calculatePhysics: function() {
-     this.forceVector.Set( 0, 0);
+    this.forceVector.Set( 0, 0);
     this.steerForceVector.Set(0,0);
     
     this.tempVector2D_1.Set( 1, 0)
-    this.directionVector2D = this.physicsBody.GetWorldVector( this.tempVector2D_1 );
+    this._getWorldVectorFromLocal2D( this.tempVector2D_1, this.directionVector2D );
     
     //Damping
     //Calculate wind/tire resistence
-    var dampingForce = this.physicsBody.GetWorldVector( this.tireResist );
-    dampingForce.x = Math.abs( dampingForce.x ) * Math.abs( this.physicsBody.GetLinearVelocity().x);
-    dampingForce.y = Math.abs( dampingForce.y ) * Math.abs( this.physicsBody.GetLinearVelocity().y);
+    // this._getWorldVectorFromLocal2D( this.tireResist, this.tempVector2D_1 );
+    // this.tempVector2D_1.x = Math.abs( this.tempVector2D_1.x ) * Math.abs( this.physicsBody.GetLinearVelocity().x);
+    // this.tempVector2D_1.y = Math.abs( this.tempVector2D_1.y ) * Math.abs( this.physicsBody.GetLinearVelocity().y);
 
-    dampingForce.x *= this.physicsBody.GetLinearVelocity().x < 0 ? 1 : -1;
-    dampingForce.y *= this.physicsBody.GetLinearVelocity().y < 0 ? 1 : -1;
+    // this.tempVector2D_1.x *= this.velocity2D.x < 0 ? 1 : -1;
+    // this.tempVector2D_1.y *= this.velocity2D.y < 0 ? 1 : -1;
 
-    var localVel = this.physicsBody.GetLocalVector( this.physicsBody.GetLinearVelocity() );
-    this.tempVector2D_1.x = -(this.tireResist.x * localVel.x);
-    this.tempVector2D_1.y = -(this.tireResist.y * localVel.y);
+    //Get local velocity and use it to determine the resistance
+    this._getLocalVectorFromWorld2D( this.velocity2D, this.tempVector2D_3 );
+    this.tempVector2D_1.x = -(this.tireResist.x * this.tempVector2D_3.x);
+    this.tempVector2D_1.y = -(this.tireResist.y * this.tempVector2D_3.y);
 
-    // dampingForce.x = Math.abs( this.tireResist.x ) * -this.physicsBody.GetLinearVelocity().x;
-    // dampingForce.y = Math.abs( this.tireResist.y ) * -this.physicsBody.GetLinearVelocity().y;
+    
     this.forceVector.Add( this.physicsBody.GetWorldVector( this.tempVector2D_1 ) );
-    //Apply damping force
-    //this.forceVector.Add( dampingForce );
 
     //Apply damping torques
-    var torque = this.physicsBody.GetAngularVelocity() * this.tireResistTorque;
+    this.torque = this.angularVelocity * this.tireResistTorque;
     
 
     //Calculate and apply steering forces
     if ( this.moveLeft ) {
       this.tempVector2D_1.Set( 0, -this.steerForce );
-      var leftVector = this.physicsBody.GetWorldVector( this.tempVector2D_1 );
-      this.forceVector.Add( leftVector );
+      this._getWorldVectorFromLocal2D( this.tempVector2D_1, this.tempVector2D_3 );
+      this.forceVector.Add( this.tempVector2D_3 );
     }
     else if ( this.moveRight ) {
       this.tempVector2D_1.Set( 0, this.steerForce );
-      var rightVector = this.physicsBody.GetWorldVector( this.tempVector2D_1 );
-      this.forceVector.Add( rightVector );
+      this._getWorldVectorFromLocal2D( this.tempVector2D_1, this.tempVector2D_3 );
+      this.forceVector.Add( this.tempVector2D_3 );
     }
 
     if ( this.steering !== 0 ) {
-      
-      // var localVel = this.physicsBody.GetLocalVector( this.physicsBody.GetLinearVelocity() );
-      // this.tempVector2D_1.Set( 0, this.steering * this.steerForce );//* localVel.x );
-      // var leftVector = this.physicsBody.GetWorldVector( this.tempVector2D_1 );
-      // this.forcePoint.Set( -1, 0 );
-      // this.steerForceVector.Add( leftVector, this.physicsBody.GetWorldPoint( this.forcePoint ) );
-
-      // this.physicsBody.ApplyForce( this.steerForceVector, this.forcePoint );
-
-      torque += this.steering * this.steerForce;
+      this.torque += this.steering * this.steerForce;
     }
     else if ( this.ai_steering !== 0 ) {
-      torque += this.ai_steering * this.steerForce;
+      this.torque += this.ai_steering * this.steerForce;
     }
     
-    this.physicsBody.ApplyTorque( torque );
+    //this.physicsBody.ApplyTorque( torque );
 
     //Calculate the acceleration due to vehicle engine
     if ( this.accel || this.ai_accel ) {
@@ -246,9 +257,9 @@ Vehicle.prototype = {
       this.forceVector.Add( this.tempVector2D_1 );
     }
     
-    if ( this.forceVector.x !== 0 || this.forceVector.y !== 0) {
-      this.physicsBody.ApplyForce( this.forceVector, this.physicsBody.GetWorldCenter() );
-    }
+    //if ( this.forceVector.x !== 0 || this.forceVector.y !== 0) {
+      //this.physicsBody.ApplyForce( this.forceVector, this.physicsBody.GetWorldCenter() );
+    //}
 
   },
 
