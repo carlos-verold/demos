@@ -20,6 +20,9 @@ FlockController.prototype = {
     this.track = track;
 
     this.physicsSim = physicsSim;
+
+    //Data array that will be sent to the physics worker every to update the forces being applied.
+    this.physicsData = [];
     //this.physicsSim.createVehicleBodies( numDrivers );
     this.initDrivers( numDrivers );
     this.initVehicles( numDrivers );
@@ -31,8 +34,9 @@ FlockController.prototype = {
     //Vector to record
     this.tempVector2D = new b2Vec2();
     
+    this.physicsSim.postMessage("start");
     //Bind to main update loop
-    this.veroldApp.on("update", this.update, this );    
+    this.veroldApp.on("update", this.update, this );
   },
 
   uninitialize : function() {
@@ -53,19 +57,26 @@ FlockController.prototype = {
         //this.tempVector2D.Add( this.drivers[x].tendToPaceRabbit() );
 
         //Get each boid to try to follow the track's direction at a certain speed
-        this.tempVector2D.Add( this.drivers[x].tendToTrackDirection( this.flockSpeed ) );
+        //this.tempVector2D.Add( this.drivers[x].tendToTrackDirection( this.flockSpeed ) );
 
         //For each boid, calculate the "centre of mass" of nearby boids and get a vector that represents the desired direction of travel
-        this.tempVector2D.Add( this.drivers[x].tendToCentreOfFlock( this.centreOfFlockMultiplier ) );
+        //this.tempVector2D.Add( this.drivers[x].tendToCentreOfFlock( this.centreOfFlockMultiplier ) );
 
-        this.tempVector2D.Add( this.drivers[x].tendToMaintainDistance( this.flockSpread, this.spreadStrength ) );
+        //this.tempVector2D.Add( this.drivers[x].tendToMaintainDistance( this.flockSpread, this.spreadStrength ) );
 
-         this.tempVector2D.Add( this.drivers[x].tendToMatchVelocity() );
+        // this.tempVector2D.Add( this.drivers[x].tendToMatchVelocity() );
       
         //Using the combined vector, tell the driver where to go (via the vector)
-        this.drivers[x].driveTowards( this.tempVector2D );
+        //this.drivers[x].driveTowards( this.tempVector2D );
+
+        this.drivers[x].vehicle.calculatePhysics();
+        this.physicsData[x].forceVector.x = this.drivers[x].vehicle.forceVector.x;
+        this.physicsData[x].forceVector.y = this.drivers[x].vehicle.forceVector.y;
+        this.physicsData[x].torque = this.drivers[x].vehicle.torque;
       }
     }
+
+
   },
 
   fixedUpdate : function( delta ) {
@@ -104,7 +115,7 @@ FlockController.prototype = {
     for ( var x = 0; x < numDrivers; x++ ) {
       
       _initVehicle( x );
-      
+      this.physicsData.push( { forceVector: {x: 0, y:0 }, torque: 0 });
     }
   },
 

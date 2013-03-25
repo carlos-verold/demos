@@ -21,8 +21,8 @@ Vehicle = function( veroldApp, driver ) {
   this.position2D = new b2Vec2();
   this.velocity2D = new b2Vec2();
   this.orientation2D = new THREE.Quaternion();
-  this.torque;
-  this.angularVelocity;
+  this.torque = 0;
+  this.angularVelocity = 0;
 }
 
 Vehicle.prototype = {
@@ -40,6 +40,7 @@ Vehicle.prototype = {
     this.directionVector = new THREE.Vector3();
     this.tempVector_1 = new THREE.Vector3();
     this.tempVector_2 = new THREE.Vector3();
+    this.tempTransVector = new THREE.Vector3();
     this.tempQuaternion1 = new THREE.Quaternion();
     this.tempQuaternion2 = new THREE.Quaternion();
     
@@ -74,7 +75,7 @@ Vehicle.prototype = {
             that.model = carInstance;
             //Bind to main update loop
             that.veroldApp.on("update", that.update, that );
-            that.veroldApp.on("fixedUpdate", that.fixedUpdate, that );
+            //that.veroldApp.on("fixedUpdate", that.fixedUpdate, that );
             if ( options.success ) options.success( that );
 
             that.model.traverse( function(obj) {
@@ -106,23 +107,20 @@ Vehicle.prototype = {
   update : function( delta ) {
     //From physics body, set the transform of the graphical vehicle.
     //this.track.
-    // var pos = this.physicsBody.GetPosition();
-    // var angle = this.physicsBody.GetAngle();
-    
-    //this.forceVector.y is the lateral force that is being applied to the vehicle.
-    console.log("TODO: still need to convert force vector into local space to determine the roll")
-    var roll = 0;//this.physicsBody.GetLocalVector( this.forceVector ).y;
+
+    //this.calculatePhysics( );
+
+    this._getLocalVectorFromWorld2D( this.forceVector, this.tempVector2D_2 );
+    var roll = this.tempVector2D_2.y;
     roll = Math.max( Math.min( roll, 1.0 ), -1.0 );
     roll *= 0.2;
-    this._setVehicleOrientation( this.angle2D );
+    //this._setVehicleOrientation( this.angle2D );
     this._setVehicleRoll( roll );
     
     this.model.set( {"payload.position" : { x: this.position2D.x, y: 0, z: this.position2D.y }} );
   },
 
   fixedUpdate : function( delta ) {
-    
-    this.calculatePhysics( );
    
   },
 
@@ -130,6 +128,12 @@ Vehicle.prototype = {
     //Set the graphical body position and the physics body
     this.model.set( {"payload.position" : { x: position.x, y: position.y, z: position.z}});
     //this.physicsBody.SetPosition( new b2Vec2( position.x, position.z ) );
+  },
+
+  setPosition2D: function( position ) {
+    //TODO set the y based on the height of the ground
+    this.tempTransVector.set( position.x, 0, position.y );
+    this.setPosition( this.tempTransVector );
   },
 
   getPosition2D: function() {
@@ -142,14 +146,23 @@ Vehicle.prototype = {
 
   setAngle: function( radians ) {
     this._setVehicleOrientation( radians );
-    //this.physicsBody.SetAngle( radians );
+    this.angle2D = radians;
+  },
+
+  setAngularVelocity: function( angularVel ) {
+    this.angularVelocity = angularVel;
+  },
+
+  setVelocity2D: function( vel ) {
+    this.velocity2D.Set( vel.x, vel.y );
   },
 
   _setVehicleOrientation: function( radians ) {
+
     this.directionVector.set( 0, -1, 0 );
     //this.tempQuaternion1.setFromEuler( this.directionVector );
     this.tempQuaternion1.setFromAxisAngle( this.directionVector, radians );
-    // this.tempQuaternion1.multiply( this.tempQuaternion2 );
+    this.orientation2D.copy( this.tempQuaternion1 );
     this.model.set( {"payload.orientation" : { x: this.tempQuaternion1.x, y: this.tempQuaternion1.y, z: this.tempQuaternion1.z, w: this.tempQuaternion1.w}});
     this.directionVector.set( 1, 0, 0 );
     this.directionVector.applyQuaternion( this.tempQuaternion1 );
@@ -185,15 +198,17 @@ Vehicle.prototype = {
   },
 
   _getWorldVectorFromLocal2D: function( localVec, outWorldVec ) {
-    this.tempVector_2.set( localVec.x, 0, localVec.y );
-    this.tempVector_2.applyQuaternion( this.orientation2D );
-    outWorldVec.Set( this.tempVector_2.x, this.tempVector_2.z );
+    this.tempTransVector.set( localVec.x, 0, localVec.y );
+    this.tempTransVector.applyQuaternion( this.orientation2D );
+    outWorldVec.Set( this.tempTransVector.x, this.tempTransVector.z );
   },
 
   _getLocalVectorFromWorld2D: function( worldVec, outLocalVec ) {
-    this.tempVector_2.set( worldVec.x, 0, worldVec.y );
-    this.tempVector_2.applyQuaternion( this.orientation2D );
-    outLocalVec.Set( this.tempVector_2.x, this.tempVector_2.z );
+    this.tempTransVector.set( worldVec.x, 0, worldVec.y );
+    this.tempQuaternion1.copy( this.orientation2D );
+    this.tempQuaternion1.inverse();
+    this.tempTransVector.applyQuaternion( this.tempQuaternion1 );
+    outLocalVec.Set( this.tempTransVector.x, this.tempTransVector.z );
   },
 
   calculatePhysics: function() {
@@ -217,8 +232,8 @@ Vehicle.prototype = {
     this.tempVector2D_1.x = -(this.tireResist.x * this.tempVector2D_3.x);
     this.tempVector2D_1.y = -(this.tireResist.y * this.tempVector2D_3.y);
 
-    
-    this.forceVector.Add( this.physicsBody.GetWorldVector( this.tempVector2D_1 ) );
+    this._getWorldVectorFromLocal2D( this.tempVector2D_1, this.tempVector2D_2 )
+    this.forceVector.Add( this.tempVector2D_2 );
 
     //Apply damping torques
     this.torque = this.angularVelocity * this.tireResistTorque;

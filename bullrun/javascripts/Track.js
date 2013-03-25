@@ -30,7 +30,7 @@ Track.prototype = {
     this.physicsSim = physicsSim;
     var that = this;
     //Bind to main update loop
-    this.veroldApp.on("update", this.update, this );
+    //this.veroldApp.on("update", this.update, this );
     this.scene = scene;
     sceneObjs = scene.getAllObjects( { filter: { "model" : true }});
     for ( var x in sceneObjs ) {
@@ -56,15 +56,7 @@ Track.prototype = {
 
   uninitialize : function() {
 	
-    this.veroldApp.off("update", this.update, this );
-  },
-
-  update : function( delta ) {
-    
-  },
-
-  fixedUpdate : function( delta ) {
-
+    //this.veroldApp.off("update", this.update, this );
   },
 
   getPaceRabbit : function() {
@@ -179,7 +171,7 @@ Track.prototype = {
             trackPos: u
           }
         }
-        this.physicsSim.postMessage( trackObjData );
+        //this.physicsSim.postMessage( trackObjData );
 
       }
 
@@ -218,7 +210,8 @@ Track.prototype = {
         length: 0.5,
         width: 0.2,
         angle: angle,
-        position: { x: position.x, y: position.y },
+        position: { x: position.x, y: position.z },
+        driverID: vehicle.driver.driverID,
       }
     }
     this.physicsSim.postMessage( vehicleData );
