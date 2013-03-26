@@ -32,7 +32,7 @@ self.onmessage = function (event) {
     else if ( event.data.name == "createTrackObject") {
         createTrackObject( event.data.data );
     }
-    else if ( event.data.name == "start" ) {
+    else if ( event.data == "start" ) {
         update();
     }
 };
@@ -51,11 +51,12 @@ var vehicleFixtures = [];
 var trackBodies = [];
 var trackFixtures = [];
 var trackBodyPositions = [];
+var localBB = [];
+var localFlockRange = 2;
 
 function update() {
-    timeoutID = setTimeout( update, 16.67  ); //Rounds timeout value to integer...
+    timeoutID = setTimeout( update, 17  ); //Rounds timeout value to integer...
 
-    
     //Apply forces set by the application
     applyVehicleForces();
       //Calculate vehicle physics
@@ -70,26 +71,28 @@ function update() {
     //world.DrawDebugData();
     world.ClearForces();
 
-    updateVehicleData();
-
     if ( updateRequested ) {
       //Send updated data to the main application
       self.postMessage( this.vehicleData )
+      updateRequested = false;
+      updateVehicleData();
     }
 }
 
 function applyVehicleForces() {
-  for ( var x in updateData ) {
-    vehicleBodies[x].ApplyForce( updateData[x].forceVector, vehicleBodies[x].GetWorldCenter() );
-    vehicleBodies[x].ApplyTorque( updateData[x].torque );
+  if ( updateData && vehicleBodies.length == updateData.length ) {
+    for ( var x in updateData ) {
+      vehicleBodies[x].ApplyForce( updateData[x].forceVector, vehicleBodies[x].GetWorldCenter() );
+      vehicleBodies[x].ApplyTorque( updateData[x].torque );
+    }
   }
 }
 
 function updateVehicleData() {
   for ( var x in vehicleBodies ) {
     var body = vehicleBodies[x];
-    vehicleData[ x ].localFlockIDs = [];
-    vehicleData[ x ].localStaticCollision = [];
+    vehicleData[ x ].nearbyVehicles = [];
+    vehicleData[ x ].nearbyObjects = [];
     //Do a AABB test to find adjacent bodies
     var position = body.GetPosition();
     localBB[x].lowerBound.Set( position.x - localFlockRange, position.y - localFlockRange);
@@ -98,11 +101,11 @@ function updateVehicleData() {
       //console.log("Fixture ", fixture, " is near driver # " + driverID );
       if ( fixture.driverID !== undefined ) {
         //if ( fixture.driverID != driverID ) {
-        vehicleData[ driverID ].localFlockIDs.push( fixture.driverID );
+        vehicleData[ x ].nearbyVehicles.push( fixture.driverID );
         //}
       }
       else {
-        vehicleData[ driverID ].localStaticCollision.push( { position: trackBodyPositions[ fixture.trackObjID], trackPos: fixture.trackPos );
+        vehicleData[ x ].nearbyObjects.push( { position: trackBodyPositions[ fixture.trackObjID ], trackPos: fixture.trackPos });
       }
     }, localBB[x] );
 
@@ -115,59 +118,62 @@ function updateVehicleData() {
 }
 
 function createVehicle( vehicle ) {
-    var fixDef = new b2FixtureDef;
-    fixDef.density = vehicle.density ? vehicle.density : 1.0;
-    fixDef.friction = vehicle.friction !== undefined ? vehicle.friction : 0.01;
-    fixDef.restitution = vehicle.restitution !== undefined ? vehicle.restitution : 0.4;
-    var width = vehicle.width !== undefined ? vehicle.width : 0.2;
-    var height = vehicle.height !== undefined ? vehicle.height : 0.50;
-       
-    var bodyDef = new b2BodyDef;
-    bodyDef.type = b2Body.b2_dynamicBody;
-      
-     fixDef.shape = new b2PolygonShape;
-     fixDef.shape.SetAsBox(
-           height / 2
-        ,  width / 2
-     );
+  //console.log( "Creating vehicle object ", vehicle);
+  var fixDef = new b2FixtureDef;
+  fixDef.density = vehicle.density ? vehicle.density : 1.0;
+  fixDef.friction = vehicle.friction !== undefined ? vehicle.friction : 0.01;
+  fixDef.restitution = vehicle.restitution !== undefined ? vehicle.restitution : 0.4;
+  var width = vehicle.width !== undefined ? vehicle.width : 0.2;
+  var height = vehicle.height !== undefined ? vehicle.height : 0.50;
+     
+  var bodyDef = new b2BodyDef;
+  bodyDef.type = b2Body.b2_dynamicBody;
     
-    var body = world.CreateBody(bodyDef)
-    vehicleBodies.push( body );
-    var fixture = body.CreateFixture(fixDef);
-    fixture.driverID = vehicle.driver.driverID;
-    vehicleFixtures.push( fixture );
-    vehicleData.push( { position: body.GetPosition(), direction: body.GetAngle(), nearbyVehicles: [], nearbyObjects: [] })
+   fixDef.shape = new b2PolygonShape;
+   fixDef.shape.SetAsBox(
+         height / 2
+      ,  width / 2
+   );
+  
+  var body = world.CreateBody(bodyDef)
+  vehicleBodies.push( body );
+  var fixture = body.CreateFixture(fixDef);
+  fixture.driverID = vehicle.driverID;
+  vehicleFixtures.push( fixture );
+  vehicleData.push( { position: body.GetPosition(), angle: body.GetAngle(), nearbyVehicles: [], nearbyObjects: [], velocity: body.GetLinearVelocity(), angularVelocity: body.GetAngularVelocity() })
+  localBB.push( new b2AABB() );
 }
 
 function createTrackObject( object ) {
-    var fixDef = new b2FixtureDef;
-    fixDef.density = object.density ? object.density : 1.0;
-    fixDef.friction = object.friction !== undefined ? object.friction : 0.01;
-    fixDef.restitution = object.restitution !== undefined ? object.restitution : 0.4;
-    var width = object.width !== undefined ? object.width : 0.2;
-    var length = object.length !== undefined ? object.length : 0.50;
-    var angle = object.angle !== undefined ? object.angle : 0;
-    var position = object.position !== undefined ? object.position : new b2Vec2();
-       
-    var bodyDef = new b2BodyDef;
-    bodyDef.type = b2Body.b2_staticBody;
-      
-    fixDef.shape = new b2PolygonShape;
-    fixDef.shape.SetAsBox(
-         length / 2
-      ,  width / 2
-    );
+  //console.log( "Creating track object ", object);
+  var fixDef = new b2FixtureDef;
+  fixDef.density = object.density ? object.density : 1.0;
+  fixDef.friction = object.friction !== undefined ? object.friction : 0.01;
+  fixDef.restitution = object.restitution !== undefined ? object.restitution : 0.4;
+  var width = object.width !== undefined ? object.width : 0.2;
+  var length = object.length !== undefined ? object.length : 0.50;
+  var angle = object.angle !== undefined ? object.angle : 0;
+  var position = object.position !== undefined ? object.position : new b2Vec2();
+     
+  var bodyDef = new b2BodyDef;
+  bodyDef.type = b2Body.b2_staticBody;
     
-    var body = world.CreateBody(bodyDef)
-    trackBodies.push( body );
-    var fixture = body.CreateFixture(fixDef);
-    trackFixtures.push( fixture );
-    trackBodyPositions.push( body.GetPosition() );
-    fixture.trackObjID = trackBodyPositions.length;
+  fixDef.shape = new b2PolygonShape;
+  fixDef.shape.SetAsBox(
+       length / 2
+    ,  width / 2
+  );
+  
+  var body = world.CreateBody(bodyDef)
+  trackBodies.push( body );
+  var fixture = body.CreateFixture(fixDef);
+  trackFixtures.push( fixture );
+  trackBodyPositions.push( body.GetPosition() );
+  fixture.trackObjID = trackBodyPositions.length;
 
-    body.SetPosition( position );
-    body.SetAngle( angle );
+  body.SetPosition( position );
+  body.SetAngle( angle );
 
-    //This will be used later to determine a driver's track progress
-    fixture.trackPos = object.trackPos;
+  //This will be used later to determine a driver's track progress
+  fixture.trackPos = object.trackPos;
 }

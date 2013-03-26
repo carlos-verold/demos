@@ -3,7 +3,7 @@ BullRun = function( veroldApp ) {
   this.veroldApp = veroldApp;  
   this.mainScene;
   this.camera;
-  this.numDrivers = 10;
+  this.numDrivers = 2;
   this.numHumanPlayers = 1;
   this.physicsDebugOn = true;
   this.debug = true;
@@ -79,6 +79,9 @@ BullRun.prototype.shutdown = function() {
 }
 
 BullRun.prototype.update = function( delta ) {
+  
+  this.physicsWorker.postMessage( { name : "updateRequest", data: this.flock.physicsData } );
+
   if ( this.debugCameraController ) this.debugCameraController.update( delta );
   if ( this.driverCameraController ) this.driverCameraController.update( delta );
 
@@ -99,10 +102,12 @@ BullRun.prototype.setupPhysicsWorker = function() {
   this.physicsWorker.onmessage = function (event) {
     //Received update from physics worker
     for ( var x in event.data ) {
-      that.track.vehicle[x].setPosition2D( event.data[x].position );
-      that.track.vehicle[x].setAngle( event.data[x].angle );
-      that.track.vehicle[x].setVelocity2D( event.data[x].velocity );
-      that.track.vehicle[x].setAngularVelocity( event.data[x].angularVelocity );
+      that.track.vehicles[x].setPosition2D( event.data[x].position );
+      that.track.vehicles[x].setAngle( event.data[x].angle );
+      that.track.vehicles[x].setVelocity2D( event.data[x].velocity );
+      that.track.vehicles[x].setAngularVelocity( event.data[x].angularVelocity );
+      that.track.vehicles[x].driver.localFlockIDs = event.data[x].nearbyVehicles;
+      that.track.vehicles[x].driver.localStaticCollision = event.data[x].nearbyObjects;
     }
   };
   //Execute the worker but don't start its update loop.

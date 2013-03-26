@@ -26,7 +26,7 @@ Driver.prototype = {
 
   uninitialize : function() {
 	
-    this.veroldApp.off("update", this.update, this );
+   // this.veroldApp.off("update", this.update, this );
   },
 
   //Boid rule to get flock to follow the road at the set pace
@@ -137,7 +137,7 @@ Driver.prototype = {
         var position = this.flockController.drivers[this.localFlockIDs[x]].vehicle.getPosition2D();
         this.tempVector2D_1.Subtract( position );
         distance = this.tempVector2D_1.Length();
-        if ( distance < spread ) {
+        if ( distance && distance < spread ) {
           this.tempVector2D_1.Multiply( (spread / distance) * (spread / distance) * strength );
           this.tempVector2D_2.Add( this.tempVector2D_1 );
         }
