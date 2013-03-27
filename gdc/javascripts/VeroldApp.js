@@ -256,56 +256,6 @@ VeroldApp.prototype = {
     script.onload = callback;
   },
 
-  setLoadingProgress : function(percent) {
-    if(!this.loadingProgress) {
-      this.createLoadingProgress();
-    }
-    this.loadingProgress.setProgress(percent); 
-  },
-
-  hideLoadingProgress : function() {
-    if(!this.loadingProgress) {
-      this.createLoadingProgress();
-    }
-    this.loadingProgress.hide(); 
-  },
-
-  createLoadingProgress: function() {
-    var LoadingProgress = function() {
-      this.progressContainer = $('#loading-progress-container');
-      this.progressIndicator = this.progressContainer.find('.loading-progress div');
-    };
-
-    LoadingProgress.prototype.setProgress = function(percent) {
-      this.progressIndicator.css({width:percent+'%'});
-    };
-
-    LoadingProgress.prototype.hide = function() {
-      this.progressContainer.hide();
-    };
-
-    this.loadingProgress = new LoadingProgress();
-  },
-
-  hasGL : (function() {
-    try {
-      return !!window.WebGLRenderingContext && !! document.createElement('canvas').getContext('experimental-webgl');
-    } catch (e) {
-      return false;
-    }
-  })(),
-
-  webGLsupported : function() {
-    if(!this.hasGL) {
-      this.hideLoadingProgress();
-      var unsupportedUI = $('#webGLunsupported');
-      unsupportedUI.show();
-      return false;
-    } else {
-      return true;
-    }
-  },
-
   isMobile : function() {
     return this.isMobileDevice;
   }

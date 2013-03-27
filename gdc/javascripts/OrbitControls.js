@@ -22,7 +22,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 	this.userRotate = true;
 	this.userRotateSpeed = 1.0;
 
-	this.userPan = true;
+	this.userPan = false;
 	this.userPanSpeed = 2.0;
 
 	this.autoRotate = false;

@@ -13,16 +13,16 @@ MyApp.prototype.startup = function( ) {
 
   var that = this;
 
-    that.veroldApp.veroldEngine.Renderer.stats.domElement.hidden = false;
+  this.veroldApp.veroldEngine.Renderer.stats.domElement.hidden = true;
 
-    this.veroldApp.loadScript('javascripts/OrbitControls.js', function() {
-  
+  this.veroldApp.loadScript('javascripts/OrbitControls.js', function() {
     that.veroldApp.loadScene( null, {
       
       success_hierarchy: function( scene ) {
 
         // hide progress indicator
-        that.veroldApp.hideLoadingProgress();
+        AppUI.hideLoadingProgress();
+        AppUI.showUI();
 
         that.inputHandler = that.veroldApp.getInputHandler();
         that.renderer = that.veroldApp.getRenderer();
@@ -38,7 +38,7 @@ MyApp.prototype.startup = function( ) {
         that.mainScene = scene;
         
         var models = that.mainScene.getAllObjects( { "filter" :{ "model" : true }});
-        model = models[ _.keys( models )[0] ].threeData;
+        var model = models[ _.keys( models )[0] ].threeData;
         
         //Create the camera
         that.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 10000 );
@@ -55,10 +55,9 @@ MyApp.prototype.startup = function( ) {
 
         that.controls = new THREE.OrbitControls(that.camera);
         
-        // Tell the engine to use this camera when rendering the scene.
+        //Tell the engine to use this camera when rendering the scene.
         that.veroldApp.setActiveCamera( that.camera );
 
-        // Grab the car, and initialize the angle of rotation
         that.car = model;
         that.carAngle = 0;
 
@@ -66,7 +65,7 @@ MyApp.prototype.startup = function( ) {
 
       progress: function(sceneObj) {
         var percent = Math.floor((sceneObj.loadingProgress.loaded_hierarchy / sceneObj.loadingProgress.total_hierarchy)*100);
-        that.veroldApp.setLoadingProgress(percent); 
+        AppUI.setLoadingProgress(percent); 
       }
     });
   });
@@ -84,14 +83,13 @@ MyApp.prototype.shutdown = function() {
 
 MyApp.prototype.update = function( delta ) {
   if (this.controls) this.controls.update();
-  
+
   // TUTORIAL: Turntable
   if (this.car) {
     this.carAngle = this.carAngle + delta * .2;
     var currentRotation = new THREE.Vector3(0, this.carAngle, 0);
     this.car.quaternion.setFromEuler(currentRotation);
   }
-
 }
 
 MyApp.prototype.fixedUpdate = function( delta ) {
